@@ -16,7 +16,21 @@ Guía completa con las preguntas que aparecen en la mayoría de entrevistas téc
 
 ### 1. ¿Qué es el ApplicationContext?
 
-El **ApplicationContext** es el contenedor IoC de Spring que gestiona beans y sus dependencias.
+**¿Qué es?**
+Contenedor IoC (Inversión de Control) central de Spring que gestiona el ciclo de vida de los beans.
+
+**¿Para qué sirve?**
+- Crear e inyectar beans automáticamente
+- Gestionar dependencias entre componentes
+- Publicar y escuchar eventos
+- Acceder a recursos y propiedades
+
+**Tipos principales:**
+- `AnnotationConfigApplicationContext`: Para configuración con anotaciones
+- `AnnotationConfigWebApplicationContext`: Para aplicaciones web
+- `ClassPathXmlApplicationContext`: Para configuración XML (legacy)
+
+**Ejemplo práctico:**
 
 <Code code={`// Tipos de ApplicationContext
 // Para aplicaciones standalone
@@ -31,6 +45,11 @@ MiServicio servicio2 = ctx.getBean("miServicio", MiServicio.class);`} lang="java
 
 ### 2. ¿Cuál es la diferencia entre BeanFactory y ApplicationContext?
 
+**¿Qué es?**
+Dos interfaces para el contenedor IoC de Spring con diferentes capacidades.
+
+**Diferencias:**
+
 | BeanFactory | ApplicationContext |
 |-------------|-------------------|
 | Lazy loading | Eager loading |
@@ -39,7 +58,21 @@ MiServicio servicio2 = ctx.getBean("miServicio", MiServicio.class);`} lang="java
 | Sin eventos | Soporte de eventos |
 | Sin i18n | Soporte i18n |
 
+**Recomendación:** Usar siempre `ApplicationContext` excepto en entornos con recursos muy limitados.
+
 ### 3. ¿Qué es @Autowired?
+
+**¿Qué es?**
+Anotación que indica a Spring que debe inyectar una dependencia automáticamente.
+
+**Tipos de inyección:**
+1. **Constructor injection** (recomendado): Dependencias inmutables, fácil testing
+2. **Setter injection**: Para dependencias opcionales
+3. **Field injection** (evitar): Difícil de testear, oculta dependencias
+
+**Nota:** Desde Spring 4.3, `@Autowired` es opcional si hay un solo constructor.
+
+**Ejemplo práctico:**
 
 <Code code={`@Service
 public class MiServicio {
@@ -67,6 +100,16 @@ public class MiServicio {
 
 ### 4. ¿Qué es @Qualifier?
 
+**¿Qué es?**
+Anotación que especifica cuál bean inyectar cuando hay múltiples candidatos del mismo tipo.
+
+**¿Cuándo usarlo?**
+Cuando tienes varias implementaciones de una interfaz y necesitas elegir una específica.
+
+**Alternativa:** `@Primary` marca un bean como preferido por defecto.
+
+**Ejemplo práctico:**
+
 <Code code={`// Cuando hay múltiples beans del mismo tipo
 public interface NotificacionService {}
 
@@ -89,6 +132,15 @@ public class AlertaService {
 
 ### 5. ¿Qué es @Primary?
 
+**¿Qué es?**
+Anotación que marca un bean como preferido cuando hay múltiples candidatos del mismo tipo.
+
+**Diferencia con @Qualifier:**
+- `@Primary`: Define el bean por defecto (en la definición)
+- `@Qualifier`: Elige un bean específico (en el punto de inyección)
+
+**Ejemplo práctico:**
+
 <Code code={`// @Primary marca el bean por defecto cuando hay múltiples
 @Service
 @Primary
@@ -104,6 +156,19 @@ public class AlertaService {
 }`} lang="java" />
 
 ### 6. ¿Qué es @Value?
+
+**¿Qué es?**
+Anotación para inyectar valores de configuración directamente en campos.
+
+**Fuentes de valores:**
+- Properties (`${propiedad}`)
+- Variables de entorno
+- Expresiones SpEL (`#{expresion}`)
+- Valores por defecto (`${prop:default}`)
+
+**Limitación:** Para configuraciones complejas, preferir `@ConfigurationProperties`.
+
+**Ejemplo práctico:**
 
 <Code code={`@Service
 public class MiServicio {
@@ -125,6 +190,19 @@ public class MiServicio {
 }`} lang="java" />
 
 ### 7. ¿Qué es @ConfigurationProperties?
+
+**¿Qué es?**
+Anotación que mapea propiedades de configuración a un objeto Java tipado.
+
+**Ventajas sobre @Value:**
+- Tipado fuerte (errores en tiempo de compilación)
+- Agrupación lógica de propiedades
+- Validación con Bean Validation
+- Autocompletado en IDEs
+
+**Requisito:** Habilitar con `@EnableConfigurationProperties` o `@ConfigurationPropertiesScan`.
+
+**Ejemplo práctico:**
 
 <Code code={`// application.yml
 # app:
@@ -158,6 +236,19 @@ public class MiServicio {
 }`} lang="java" />
 
 ### 8. ¿Qué es el ciclo de vida de un Bean?
+
+**¿Qué es?**
+Secuencia de fases por las que pasa un bean desde su creación hasta su destrucción.
+
+**Fases:**
+1. **Instanciación**: Se llama al constructor
+2. **Inyección**: Se inyectan dependencias
+3. **@PostConstruct**: Inicialización personalizada
+4. **Uso**: Bean disponible para la aplicación
+5. **@PreDestroy**: Limpieza antes de destrucción
+6. **Destrucción**: Bean eliminado del contexto
+
+**Ejemplo práctico:**
 
 <Code code={`@Component
 public class MiBean {
@@ -196,6 +287,16 @@ public MiBean miBean() {
 
 ### 9. ¿Qué es @Lazy?
 
+**¿Qué es?**
+Anotación que retrasa la creación del bean hasta que se use por primera vez.
+
+**¿Para qué sirve?**
+- Mejorar tiempo de arranque de la aplicación
+- Ahorrar recursos para beans que no siempre se usan
+- Resolver dependencias circulares
+
+**Ejemplo práctico:**
+
 <Code code={`// Bean se crea solo cuando se necesita
 @Component
 @Lazy
@@ -215,6 +316,18 @@ public class MiServicio {
 }`} lang="java" />
 
 ### 10. ¿Qué es @Profile?
+
+**¿Qué es?**
+Anotación que activa beans solo en ciertos perfiles de ejecución.
+
+**¿Para qué sirve?**
+- Configuración diferente por entorno (dev, test, prod)
+- Activar/desactivar features
+- Usar diferentes implementaciones según el entorno
+
+**Activar perfil:** `spring.profiles.active=desarrollo`
+
+**Ejemplo práctico:**
 
 <Code code={`// Bean solo activo en ciertos perfiles
 @Configuration
@@ -241,6 +354,19 @@ public class ProduccionConfig {
 
 ### 11. ¿Qué es @Conditional?
 
+**¿Qué es?**
+Anotación que crea beans condicionalmente según ciertas condiciones.
+
+**Condiciones comunes (Spring Boot):**
+- `@ConditionalOnProperty`: Según valor de propiedad
+- `@ConditionalOnClass`: Si una clase está presente
+- `@ConditionalOnMissingBean`: Si no existe otro bean del tipo
+- `@ConditionalOnBean`: Si existe otro bean
+
+**Base de la auto-configuración de Spring Boot.**
+
+**Ejemplo práctico:**
+
 <Code code={`// Bean condicional
 @Bean
 @ConditionalOnProperty(name = "feature.enabled", havingValue = "true")
@@ -261,6 +387,19 @@ public DataSource mysqlDataSource() {
 }`} lang="java" />
 
 ### 12. ¿Qué es AOP (Aspect-Oriented Programming)?
+
+**¿Qué es?**
+Programación Orientada a Aspectos - paradigma que separa concerns transversales del código de negocio.
+
+**Conceptos clave:**
+- **Aspect**: Módulo que encapsula un concern transversal
+- **Pointcut**: Dónde aplicar el aspecto
+- **Advice**: Qué hacer (Before, After, Around)
+- **JoinPoint**: Punto de ejecución donde se aplica
+
+**Usos comunes:** Logging, seguridad, transacciones, caché.
+
+**Ejemplo práctico:**
 
 <Code code={`// Aspecto para logging
 @Aspect
@@ -310,6 +449,15 @@ public class LoggingAspect {
 
 ### 13. ¿Qué es @EnableAspectJAutoProxy?
 
+**¿Qué es?**
+Anotación que habilita el soporte de AOP con AspectJ en Spring.
+
+**Tipos de proxy:**
+- **JDK Proxy** (default): Para interfaces
+- **CGLIB Proxy** (`proxyTargetClass=true`): Para clases concretas
+
+**Ejemplo práctico:**
+
 <Code code={`@Configuration
 @EnableAspectJAutoProxy
 public class AopConfig {
@@ -320,6 +468,18 @@ public class AopConfig {
 @EnableAspectJAutoProxy(proxyTargetClass = true)`} lang="java" />
 
 ### 14. ¿Qué son los eventos en Spring?
+
+**¿Qué es?**
+Sistema de publicación/suscripción para comunicación desacoplada entre componentes.
+
+**Componentes:**
+- **ApplicationEvent**: Clase base para eventos
+- **ApplicationEventPublisher**: Para publicar eventos
+- **@EventListener**: Para escuchar eventos
+
+**Ventaja:** Desacoplamiento - el publicador no conoce a los suscriptores.
+
+**Ejemplo práctico:**
 
 <Code code={`// Evento personalizado
 public class UsuarioRegistradoEvent extends ApplicationEvent {
@@ -366,6 +526,18 @@ public class EmailListener {
 
 ### 15. ¿Qué es @Scheduled?
 
+**¿Qué es?**
+Anotación para ejecutar métodos periódicamente.
+
+**Opciones:**
+- `fixedRate`: Cada X ms (desde inicio de la anterior)
+- `fixedDelay`: X ms después de terminar la anterior
+- `cron`: Expresión cron para horarios específicos
+
+**Requisito:** Habilitar con `@EnableScheduling`.
+
+**Ejemplo práctico:**
+
 <Code code={`@Configuration
 @EnableScheduling
 public class SchedulingConfig {}
@@ -398,14 +570,30 @@ public class TareasProgramadas {
 
 ### 16. ¿Cuál es el flujo de una petición en Spring MVC?
 
-1. **DispatcherServlet** recibe la petición
-2. **HandlerMapping** encuentra el controlador
-3. **HandlerAdapter** ejecuta el controlador
-4. Controlador retorna **ModelAndView**
-5. **ViewResolver** resuelve la vista
-6. Vista renderiza la respuesta
+**¿Qué es?**
+Secuencia de pasos que sigue una petición HTTP en Spring MVC.
+
+**Flujo:**
+1. **DispatcherServlet** recibe la petición (Front Controller)
+2. **HandlerMapping** encuentra el controlador apropiado
+3. **HandlerAdapter** ejecuta el método del controlador
+4. Controlador retorna **ModelAndView** o datos
+5. **ViewResolver** resuelve la vista (si aplica)
+6. Vista renderiza la respuesta al cliente
 
 ### 17. ¿Qué es @RequestMapping?
+
+**¿Qué es?**
+Anotación que mapea URLs a métodos del controlador.
+
+**Shortcuts (más usados):**
+- `@GetMapping`: Para GET
+- `@PostMapping`: Para POST
+- `@PutMapping`: Para PUT
+- `@DeleteMapping`: Para DELETE
+- `@PatchMapping`: Para PATCH
+
+**Ejemplo práctico:**
 
 <Code code={`@RestController
 @RequestMapping("/api/v1")
@@ -423,6 +611,15 @@ public class MiController {
 }`} lang="java" />
 
 ### 18. ¿Qué es @PathVariable vs @RequestParam?
+
+**¿Qué es?**
+Dos formas de extraer datos de la URL.
+
+**Diferencias:**
+- **@PathVariable**: Extrae de la ruta (`/usuarios/{id}` → `id`)
+- **@RequestParam**: Extrae query params (`?nombre=Juan` → `nombre`)
+
+**Ejemplo práctico:**
 
 <Code code={`// @PathVariable - parte de la URL
 // GET /usuarios/123
@@ -447,6 +644,17 @@ public List<Pedido> pedidos(
 
 ### 19. ¿Qué es @RequestBody y @ResponseBody?
 
+**¿Qué es?**
+Anotaciones para conversión automática entre JSON y objetos Java.
+
+**Diferencias:**
+- **@RequestBody**: JSON del request → Objeto Java
+- **@ResponseBody**: Objeto Java → JSON en response
+
+**Nota:** `@RestController` incluye `@ResponseBody` implícitamente.
+
+**Ejemplo práctico:**
+
 <Code code={`@RestController // Incluye @ResponseBody en todos los métodos
 public class UsuarioController {
     
@@ -464,6 +672,16 @@ public class UsuarioController {
 }`} lang="java" />
 
 ### 20. ¿Qué es ResponseEntity?
+
+**¿Qué es?**
+Wrapper que representa una respuesta HTTP completa (status, headers, body).
+
+**¿Para qué sirve?**
+- Controlar el código de estado HTTP
+- Añadir headers personalizados
+- Retornar respuestas vacías con status específico
+
+**Ejemplo práctico:**
 
 <Code code={`@GetMapping("/usuarios/{id}")
 public ResponseEntity<Usuario> buscar(@PathVariable Long id) {
@@ -490,6 +708,19 @@ ResponseEntity.badRequest().body(error);
 ResponseEntity.status(HttpStatus.CONFLICT).body(error);`} lang="java" />
 
 ### 21. ¿Qué es @Valid y validación?
+
+**¿Qué es?**
+Mecanismo para validar objetos usando Bean Validation (JSR 380).
+
+**Anotaciones comunes:**
+- `@NotNull`, `@NotBlank`, `@NotEmpty`
+- `@Size(min, max)`, `@Min`, `@Max`
+- `@Email`, `@Pattern`
+- `@Past`, `@Future` (fechas)
+
+**Uso:** Anotar parámetro con `@Valid` para activar validación.
+
+**Ejemplo práctico:**
 
 <Code code={`// DTO con validaciones
 public class UsuarioDTO {
@@ -527,6 +758,18 @@ public void validar(Object objeto) {
 }`} lang="java" />
 
 ### 22. ¿Qué es un Interceptor?
+
+**¿Qué es?**
+Componente que intercepta requests antes y después del controlador.
+
+**Métodos:**
+- `preHandle()`: Antes del controlador
+- `postHandle()`: Después del controlador
+- `afterCompletion()`: Después de renderizar
+
+**Usos comunes:** Logging, autenticación, métricas, modificar request/response.
+
+**Ejemplo práctico:**
 
 <Code code={`// Interceptor personalizado
 @Component
@@ -574,6 +817,11 @@ public class WebConfig implements WebMvcConfigurer {
 
 ### 23. ¿Qué es un Filter vs Interceptor?
 
+**¿Qué es?**
+Dos mecanismos para interceptar requests con diferentes niveles de acceso.
+
+**Diferencias:**
+
 | Filter | Interceptor |
 |--------|-------------|
 | Servlet API | Spring MVC |
@@ -581,7 +829,18 @@ public class WebConfig implements WebMvcConfigurer {
 | Request/Response | Handler/ModelAndView |
 | Más bajo nivel | Más alto nivel |
 
+**Recomendación:** Usar Interceptor para lógica de Spring MVC, Filter para operaciones de bajo nivel.
+
 ### 24. ¿Cómo manejar CORS?
+
+**¿Qué es?**
+Cross-Origin Resource Sharing - mecanismo de seguridad del navegador para requests entre dominios.
+
+**Configuración:**
+- **Por controlador**: `@CrossOrigin`
+- **Global**: `WebMvcConfigurer.addCorsMappings()`
+
+**Ejemplo práctico:**
 
 <Code code={`// En controlador
 @CrossOrigin(origins = "http://localhost:3000")
@@ -604,6 +863,14 @@ public class CorsConfig implements WebMvcConfigurer {
 }`} lang="java" />
 
 ### 25. ¿Qué es content negotiation?
+
+**¿Qué es?**
+Mecanismo para retornar diferentes formatos según lo que el cliente solicite.
+
+**¿Cómo funciona?**
+El cliente envía header `Accept` indicando el formato deseado (JSON, XML, etc.).
+
+**Ejemplo práctico:**
 
 <Code code={`// Retornar JSON o XML según Accept header
 @GetMapping(
@@ -635,6 +902,18 @@ public class WebConfig implements WebMvcConfigurer {
 
 ### 26. ¿Qué métodos proporciona JpaRepository?
 
+**¿Qué es?**
+Interface de Spring Data JPA que proporciona operaciones CRUD y más.
+
+**Métodos principales:**
+- `save()`, `saveAll()`: Guardar entidades
+- `findById()`, `findAll()`: Buscar
+- `deleteById()`, `delete()`: Eliminar
+- `count()`, `existsById()`: Utilidades
+- `flush()`, `saveAndFlush()`: Control de persistencia
+
+**Ejemplo práctico:**
+
 <Code code={`public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Heredados de JpaRepository:
     // save(entity), saveAll(entities)
@@ -645,6 +924,19 @@ public class WebConfig implements WebMvcConfigurer {
 }`} lang="java" />
 
 ### 27. ¿Cómo crear query methods?
+
+**¿Qué es?**
+Spring Data genera queries automáticamente a partir del nombre del método.
+
+**Palabras clave:**
+- `findBy`, `readBy`, `getBy`: Buscar
+- `And`, `Or`: Combinar condiciones
+- `GreaterThan`, `LessThan`, `Between`: Comparaciones
+- `Like`, `Containing`, `StartingWith`: Texto
+- `OrderBy`: Ordenamiento
+- `Top`, `First`: Limitar resultados
+
+**Ejemplo práctico:**
 
 <Code code={`public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
@@ -677,6 +969,20 @@ public class WebConfig implements WebMvcConfigurer {
 
 ### 28. ¿Qué es @Query?
 
+**¿Qué es?**
+Anotación para definir queries JPQL o SQL nativo personalizadas.
+
+**¿Cuándo usarlo?**
+- Query methods no son suficientes
+- Queries complejas con JOINs
+- Operaciones de actualización/eliminación masiva
+
+**Tipos:**
+- JPQL (default): Orientado a objetos
+- Nativo (`nativeQuery=true`): SQL puro
+
+**Ejemplo práctico:**
+
 <Code code={`public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
     // JPQL
@@ -702,6 +1008,18 @@ public class WebConfig implements WebMvcConfigurer {
 }`} lang="java" />
 
 ### 29. ¿Qué es Specification?
+
+**¿Qué es?**
+API para construir queries dinámicas con criterios combinables.
+
+**¿Para qué sirve?**
+- Filtros de búsqueda dinámicos
+- Combinar condiciones en runtime
+- Reutilizar criterios de búsqueda
+
+**Requisito:** Extender `JpaSpecificationExecutor`.
+
+**Ejemplo práctico:**
 
 <Code code={`// Para queries dinámicas
 public interface UsuarioRepository extends 
@@ -737,6 +1055,19 @@ List<Usuario> usuarios = repository.findAll(
 
 ### 30. ¿Qué es Pagination y Sorting?
 
+**¿Qué es?**
+Mecanismos para dividir y ordenar resultados de queries.
+
+**Componentes:**
+- **Pageable**: Define página y tamaño
+- **Page**: Resultado con metadatos de paginación
+- **Sort**: Define ordenamiento
+
+**¿Para qué sirve?**
+Evitar cargar todos los registros en memoria.
+
+**Ejemplo práctico:**
+
 <Code code={`public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
     Page<Usuario> findByActivo(boolean activo, Pageable pageable);
@@ -760,6 +1091,16 @@ Sort multiSort = Sort.by("nombre").ascending()
                      .and(Sort.by("edad").descending());`} lang="java" />
 
 ### 31. ¿Qué es @EntityGraph?
+
+**¿Qué es?**
+Anotación que define qué relaciones cargar junto con la entidad.
+
+**¿Para qué sirve?**
+- Evitar el problema N+1 queries
+- Cargar relaciones LAZY en queries específicas
+- Sin cambiar FetchType global de la entidad
+
+**Ejemplo práctico:**
 
 <Code code={`// Evitar N+1 queries
 @Entity
@@ -789,6 +1130,19 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 )`} lang="java" />
 
 ### 32. ¿Qué es Auditing?
+
+**¿Qué es?**
+Funcionalidad que registra automáticamente quién y cuándo creó/modificó entidades.
+
+**Anotaciones:**
+- `@CreatedDate`: Fecha de creación
+- `@LastModifiedDate`: Fecha de modificación
+- `@CreatedBy`: Usuario que creó
+- `@LastModifiedBy`: Usuario que modificó
+
+**Requisito:** Habilitar con `@EnableJpaAuditing`.
+
+**Ejemplo práctico:**
 
 <Code code={`@Configuration
 @EnableJpaAuditing
@@ -825,6 +1179,18 @@ public class AuditorAwareImpl implements AuditorAware<String> {
 
 ### 33. ¿Qué es Projection?
 
+**¿Qué es?**
+Mecanismo para retornar solo campos específicos en vez de la entidad completa.
+
+**Tipos:**
+- **Interface projection**: Define getters para campos deseados
+- **Class projection (DTO)**: Clase con constructor
+- **Dynamic projection**: Tipo genérico
+
+**Ventajas:** Mejor performance, seguridad (no exponer campos sensibles).
+
+**Ejemplo práctico:**
+
 <Code code={`// Interface projection
 public interface UsuarioResumen {
     String getNombre();
@@ -849,6 +1215,19 @@ List<UsuarioResumen> resumenes = repository.findByActivo(true, UsuarioResumen.cl
 
 ### 34. ¿Qué es @Transactional propagation?
 
+**¿Qué es?**
+Atributo que define cómo se comporta una transacción cuando ya existe otra.
+
+**Tipos principales:**
+- **REQUIRED** (default): Usa existente o crea nueva
+- **REQUIRES_NEW**: Siempre crea nueva
+- **MANDATORY**: Debe existir, sino error
+- **SUPPORTS**: Usa si existe, sino sin transacción
+- **NOT_SUPPORTED**: Ejecuta sin transacción
+- **NEVER**: Error si existe transacción
+
+**Ejemplo práctico:**
+
 <Code code={`// Propagation types
 @Transactional(propagation = Propagation.REQUIRED) // Default
 // Usa transacción existente o crea nueva
@@ -870,6 +1249,19 @@ List<UsuarioResumen> resumenes = repository.findByActivo(true, UsuarioResumen.cl
 
 ### 35. ¿Qué es @Transactional isolation?
 
+**¿Qué es?**
+Atributo que define el nivel de aislamiento entre transacciones concurrentes.
+
+**Niveles:**
+- **READ_UNCOMMITTED**: Puede leer datos no confirmados
+- **READ_COMMITTED**: Solo lee datos confirmados
+- **REPEATABLE_READ**: Lecturas repetibles consistentes
+- **SERIALIZABLE**: Máximo aislamiento (más lento)
+
+**Problemas que previene:** Dirty reads, non-repeatable reads, phantom reads.
+
+**Ejemplo práctico:**
+
 <Code code={`// Isolation levels
 @Transactional(isolation = Isolation.READ_UNCOMMITTED)
 // Puede leer datos no confirmados (dirty reads)
@@ -889,14 +1281,28 @@ List<UsuarioResumen> resumenes = repository.findByActivo(true, UsuarioResumen.cl
 
 ### 36. ¿Cómo funciona la autenticación en Spring Security?
 
+**¿Qué es?**
+Proceso de verificación de identidad del usuario.
+
+**Flujo:**
 1. Usuario envía credenciales
-2. **AuthenticationFilter** intercepta
-3. **AuthenticationManager** procesa
-4. **AuthenticationProvider** valida
-5. **UserDetailsService** carga usuario
+2. **AuthenticationFilter** intercepta la petición
+3. **AuthenticationManager** procesa la autenticación
+4. **AuthenticationProvider** valida credenciales
+5. **UserDetailsService** carga datos del usuario
 6. Si válido, crea **Authentication** en **SecurityContext**
 
 ### 37. ¿Qué es UserDetailsService?
+
+**¿Qué es?**
+Interface para cargar datos del usuario desde la base de datos.
+
+**Método a implementar:** `loadUserByUsername(String username)`
+
+**¿Para qué sirve?**
+Conectar Spring Security con tu sistema de usuarios personalizado.
+
+**Ejemplo práctico:**
 
 <Code code={`@Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -919,6 +1325,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 }`} lang="java" />
 
 ### 38. ¿Cómo implementar JWT?
+
+**¿Qué es?**
+JSON Web Token - estándar para autenticación stateless.
+
+**Flujo:**
+1. Usuario envía credenciales
+2. Servidor genera JWT con datos del usuario
+3. Cliente envía JWT en header `Authorization: Bearer <token>`
+4. Servidor valida JWT en cada request
+
+**Componentes:** JwtUtil (generar/validar) + JwtFilter (interceptar requests).
+
+**Ejemplo práctico:**
 
 <Code code={`// Generar token
 @Component
@@ -982,6 +1401,18 @@ public class JwtFilter extends OncePerRequestFilter {
 
 ### 39. ¿Qué es @PreAuthorize y @PostAuthorize?
 
+**¿Qué es?**
+Anotaciones para seguridad a nivel de método.
+
+**Diferencias:**
+- **@PreAuthorize**: Verifica ANTES de ejecutar el método
+- **@PostAuthorize**: Verifica DESPUÉS (puede usar `returnObject`)
+- **@PreFilter/@PostFilter**: Filtra colecciones
+
+**Requisito:** Habilitar con `@EnableMethodSecurity`.
+
+**Ejemplo práctico:**
+
 <Code code={`@Configuration
 @EnableMethodSecurity
 public class SecurityConfig {}
@@ -1009,6 +1440,18 @@ public class UsuarioService {
 }`} lang="java" />
 
 ### 40. ¿Qué es OAuth2?
+
+**¿Qué es?**
+Protocolo de autorización para login con proveedores externos.
+
+**Proveedores comunes:** Google, GitHub, Facebook, Microsoft.
+
+**Ventajas:**
+- No manejar passwords de usuarios
+- Experiencia de login simplificada
+- Acceso a datos del perfil del proveedor
+
+**Ejemplo práctico:**
 
 <Code code={`// Configuración OAuth2 Login
 @Configuration
@@ -1038,6 +1481,16 @@ spring:
 
 ### 41. ¿Qué es CSRF y cómo manejarlo?
 
+**¿Qué es?**
+Cross-Site Request Forgery - ataque donde un sitio malicioso hace requests en nombre del usuario.
+
+**En Spring Security:**
+- Habilitado por defecto para formularios
+- Deshabilitar para APIs REST stateless (usan JWT)
+- Para SPAs: usar `CookieCsrfTokenRepository`
+
+**Ejemplo práctico:**
+
 <Code code={`// CSRF habilitado por defecto para formularios
 // Deshabilitar para APIs REST stateless
 @Bean
@@ -1053,6 +1506,16 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 )`} lang="java" />
 
 ### 42. ¿Cómo obtener el usuario autenticado?
+
+**¿Qué es?**
+Formas de acceder a los datos del usuario actualmente autenticado.
+
+**Opciones:**
+1. **@AuthenticationPrincipal**: En parámetro del controlador
+2. **Principal**: Interface estándar de Java
+3. **SecurityContextHolder**: Programáticamente desde cualquier lugar
+
+**Ejemplo práctico:**
 
 <Code code={`// En controlador
 @GetMapping("/perfil")
@@ -1073,6 +1536,18 @@ Collection<? extends GrantedAuthority> roles = auth.getAuthorities();`} lang="ja
 
 ### 43. ¿Qué es PasswordEncoder?
 
+**¿Qué es?**
+Interface para encriptar y verificar passwords de forma segura.
+
+**Implementaciones:**
+- **BCryptPasswordEncoder**: Estándar recomendado
+- **Argon2PasswordEncoder**: Más seguro, más lento
+- **DelegatingPasswordEncoder**: Soporta múltiples algoritmos
+
+**Nunca almacenar passwords en texto plano.**
+
+**Ejemplo práctico:**
+
 <Code code={`@Bean
 public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
@@ -1091,6 +1566,17 @@ public PasswordEncoder passwordEncoder() {
 
 ### 44. ¿Cómo proteger endpoints por rol?
 
+**¿Qué es?**
+Configurar autorización basada en roles para diferentes endpoints.
+
+**Métodos comunes:**
+- `permitAll()`: Acceso público
+- `authenticated()`: Requiere autenticación
+- `hasRole("ADMIN")`: Requiere rol específico
+- `hasAnyRole("USER", "ADMIN")`: Cualquiera de los roles
+
+**Ejemplo práctico:**
+
 <Code code={`@Bean
 public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
@@ -1106,6 +1592,18 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
 ### 45. ¿Qué es SecurityContext?
 
+**¿Qué es?**
+Objeto que almacena el `Authentication` del usuario actual.
+
+**Acceso:** Vía `SecurityContextHolder.getContext()`.
+
+**Estrategias de almacenamiento:**
+- **MODE_THREADLOCAL** (default): Por hilo
+- **MODE_INHERITABLETHREADLOCAL**: Heredado a hilos hijos
+- **MODE_GLOBAL**: Compartido globalmente
+
+**Ejemplo práctico:**
+
 <Code code={`// SecurityContext almacena Authentication del usuario actual
 SecurityContext context = SecurityContextHolder.getContext();
 Authentication auth = context.getAuthentication();
@@ -1120,6 +1618,16 @@ SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_GLOBAL);`} lang
 ## Testing (46-50)
 
 ### 46. ¿Cómo testear controladores?
+
+**¿Qué es?**
+Tests de integración para la capa web.
+
+**Herramientas:**
+- **@WebMvcTest**: Carga solo la capa web (rápido)
+- **MockMvc**: Simula requests HTTP
+- **@MockBean**: Mockea dependencias (servicios)
+
+**Ejemplo práctico:**
 
 <Code code={`@WebMvcTest(UsuarioController.class)
 class UsuarioControllerTest {
@@ -1160,6 +1668,16 @@ class UsuarioControllerTest {
 
 ### 47. ¿Cómo testear repositorios?
 
+**¿Qué es?**
+Tests de integración para la capa de persistencia.
+
+**Herramientas:**
+- **@DataJpaTest**: Configura BD en memoria + repositorios
+- **TestEntityManager**: Preparar datos de prueba
+- Rollback automático después de cada test
+
+**Ejemplo práctico:**
+
 <Code code={`@DataJpaTest
 class UsuarioRepositoryTest {
     
@@ -1183,6 +1701,16 @@ class UsuarioRepositoryTest {
 
 ### 48. ¿Cómo testear servicios?
 
+**¿Qué es?**
+Tests unitarios para la capa de lógica de negocio.
+
+**Herramientas:**
+- **@ExtendWith(MockitoExtension.class)**: Habilita Mockito
+- **@Mock**: Crea mocks de dependencias
+- **@InjectMocks**: Inyecta mocks en el servicio
+
+**Ejemplo práctico:**
+
 <Code code={`@ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
     
@@ -1205,6 +1733,21 @@ class UsuarioServiceTest {
 }`} lang="java" />
 
 ### 49. ¿Qué es @SpringBootTest?
+
+**¿Qué es?**
+Anotación que carga el contexto completo de Spring para tests de integración.
+
+**Características:**
+- Carga todos los beans de la aplicación
+- Más lento que tests unitarios
+- Prueba la integración real entre componentes
+
+**WebEnvironment:**
+- `MOCK` (default): Sin servidor
+- `RANDOM_PORT`: Servidor en puerto aleatorio
+- `DEFINED_PORT`: Servidor en puerto configurado
+
+**Ejemplo práctico:**
 
 <Code code={`@SpringBootTest
 class IntegrationTest {
@@ -1237,6 +1780,18 @@ class WebIntegrationTest {
 }`} lang="java" />
 
 ### 50. ¿Qué es TestContainers?
+
+**¿Qué es?**
+Librería para ejecutar contenedores Docker en tests.
+
+**¿Para qué sirve?**
+- Probar con BD real (PostgreSQL, MySQL, MongoDB)
+- Probar con servicios externos (Redis, Kafka, RabbitMQ)
+- Tests más realistas que con BD en memoria
+
+**Requisito:** Docker instalado y corriendo.
+
+**Ejemplo práctico:**
 
 <Code code={`@SpringBootTest
 @Testcontainers

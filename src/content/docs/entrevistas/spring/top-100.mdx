@@ -16,6 +16,10 @@ Esta guía cubre desde fundamentos hasta temas avanzados. Las preguntas 1-50 est
 
 ### 51. ¿Qué es Spring Boot Actuator?
 
+**¿Qué es?** Módulo que expone endpoints para monitorear y gestionar la aplicación en producción.
+
+**¿Para qué sirve?** Health checks, métricas, info de la app, gestión de logs.
+
 <Code code={`// Dependencia
 // spring-boot-starter-actuator
 
@@ -38,6 +42,8 @@ management:
 // /actuator/httptrace - Trazas HTTP`} lang="yaml" />
 
 ### 52. ¿Cómo crear un endpoint personalizado de Actuator?
+
+**¿Cómo?** Usar `@Endpoint` con operaciones `@ReadOperation`, `@WriteOperation`, `@DeleteOperation`.
 
 <Code code={`@Component
 @Endpoint(id = "custom")
@@ -64,6 +70,10 @@ public class CustomEndpoint {
 
 ### 53. ¿Qué es Spring Boot DevTools?
 
+**¿Qué es?** Herramientas para mejorar la experiencia de desarrollo.
+
+**Incluye:** Restart automático, LiveReload, caché deshabilitado para templates.
+
 <Code code={`// Dependencia
 // spring-boot-devtools
 
@@ -83,6 +93,10 @@ spring:
       enabled: true`} lang="yaml" />
 
 ### 54. ¿Cómo externalizar configuración?
+
+**¿Qué es?** Separar configuración del código para diferentes entornos (dev, prod, etc.).
+
+**Orden de precedencia:** Command line > Env vars > application-{profile}.yml > application.yml.
 
 <Code code={`// Orden de precedencia (mayor a menor):
 // 1. Command line arguments
@@ -105,6 +119,10 @@ spring:
       - optional:file:./config/custom.yml`} lang="yaml" />
 
 ### 55. ¿Qué es @ConfigurationProperties validation?
+
+**¿Qué es?** Validar propiedades de configuración al iniciar la aplicación.
+
+**¿Cómo?** Usar `@Validated` + anotaciones de Bean Validation (`@NotBlank`, `@Min`, etc.).
 
 <Code code={`@Configuration
 @ConfigurationProperties(prefix = "app")
@@ -132,6 +150,10 @@ public class AppProperties {
 
 ### 56. ¿Cómo crear un starter personalizado?
 
+**¿Qué es?** Librería que autoconfigura funcionalidad en Spring Boot.
+
+**Pasos:** 1) Módulo autoconfigure con `@Configuration`, 2) Registrar en META-INF, 3) Módulo starter con dependencias.
+
 <Code code={`// 1. Crear módulo autoconfigure
 @Configuration
 @ConditionalOnClass(MiServicio.class)
@@ -153,6 +175,10 @@ com.ejemplo.MiAutoConfiguration
 
 ### 57. ¿Qué es GraalVM Native Image?
 
+**¿Qué es?** Compilar aplicación Spring Boot a ejecutable nativo (sin JVM).
+
+**Ventajas:** Arranque instantáneo (~50ms), menor memoria. **Desventajas:** Compilación lenta, limitaciones de reflection.
+
 <Code code={`// Compilar a ejecutable nativo
 // Ventajas: arranque instantáneo, menor memoria
 // Desventajas: tiempo de compilación, limitaciones de reflection
@@ -171,6 +197,10 @@ mvn -Pnative native:compile
 public class MiConfig {}`} lang="xml" />
 
 ### 58. ¿Qué es Spring Boot Docker Compose?
+
+**¿Qué es?** Integración nativa con Docker Compose (Spring Boot 3.1+).
+
+**¿Para qué sirve?** Iniciar/detener contenedores automáticamente al arrancar la app.
 
 <Code code={`// Spring Boot 3.1+ - integración con Docker Compose
 
@@ -195,6 +225,10 @@ spring:
 // Spring Boot inicia/detiene contenedores automáticamente`} lang="yaml" />
 
 ### 59. ¿Qué es Problem Details (RFC 7807)?
+
+**¿Qué es?** Estándar para respuestas de error HTTP estructuradas.
+
+**¿Para qué sirve?** Errores consistentes con type, title, status, detail, instance.
 
 <Code code={`// Spring Boot 3+ - respuestas de error estandarizadas
 
@@ -229,6 +263,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 ### 60. ¿Qué es Virtual Threads en Spring Boot?
 
+**¿Qué es?** Soporte para Virtual Threads de Java 21 en Spring Boot 3.2+.
+
+**Beneficio:** Cada request usa un virtual thread. Mejor escalabilidad sin cambiar código.
+
 <Code code={`// Spring Boot 3.2+ con Java 21
 
 // application.yml
@@ -249,6 +287,10 @@ server:
       # Con virtual threads, este límite es menos relevante`} lang="yaml" />
 
 ### 61. ¿Qué es Observability en Spring Boot?
+
+**¿Qué es?** Capacidad de entender el estado interno del sistema mediante métricas, logs y traces.
+
+**Spring Boot 3+:** Integración con Micrometer para observabilidad unificada.
 
 <Code code={`// Spring Boot 3+ - Observability integrada
 
@@ -281,6 +323,10 @@ public class MiServicio {
 }`} lang="java" />
 
 ### 62. ¿Qué es HTTP Interface Client?
+
+**¿Qué es?** Cliente HTTP declarativo usando interfaces (similar a Feign pero nativo).
+
+**¿Para qué sirve?** Definir clientes HTTP con anotaciones, sin implementación manual.
 
 <Code code={`// Spring 6+ - Cliente HTTP declarativo
 
@@ -317,6 +363,10 @@ public class ClientConfig {
 }`} lang="java" />
 
 ### 63. ¿Qué es RestClient?
+
+**¿Qué es?** Cliente HTTP fluido de Spring 6.1+. Reemplazo moderno de RestTemplate.
+
+**Ventajas:** API fluida, mejor integración con Spring, soporte para Virtual Threads.
 
 <Code code={`// Spring 6.1+ - Cliente HTTP fluido (reemplazo de RestTemplate)
 
@@ -356,6 +406,10 @@ public class UsuarioService {
 
 ### 64. ¿Qué es SSL Bundles?
 
+**¿Qué es?** Gestión simplificada de certificados SSL en Spring Boot 3.1+.
+
+**¿Para qué sirve?** Configurar keystores/truststores de forma declarativa y reutilizable.
+
 <Code code={`// Spring Boot 3.1+ - Gestión simplificada de SSL
 
 // application.yml
@@ -381,6 +435,10 @@ public RestClient restClient(RestClient.Builder builder, SslBundles sslBundles) 
 }`} lang="yaml" />
 
 ### 65. ¿Qué es Service Connection?
+
+**¿Qué es?** Autoconfiguración de conexiones a servicios externos (BD, caches, etc.).
+
+**¿Para qué sirve?** Con Testcontainers/Docker Compose, configura propiedades automáticamente.
 
 <Code code={`// Spring Boot 3.1+ - Conexión automática a servicios
 
@@ -411,7 +469,9 @@ services:
 
 ### 66. ¿Qué es Spring Cloud?
 
-Spring Cloud proporciona herramientas para sistemas distribuidos:
+**¿Qué es?** Conjunto de proyectos para construir microservicios y sistemas distribuidos.
+
+**Incluye:
 - **Config Server**: Configuración centralizada
 - **Service Discovery**: Eureka, Consul
 - **Load Balancing**: Spring Cloud LoadBalancer
@@ -420,6 +480,10 @@ Spring Cloud proporciona herramientas para sistemas distribuidos:
 - **Distributed Tracing**: Micrometer Tracing
 
 ### 67. ¿Qué es Spring Cloud Config?
+
+**¿Qué es?** Servidor centralizado de configuración para microservicios.
+
+**¿Para qué sirve?** Configuración externa en Git, cambios sin redesplegar, perfiles por entorno.
 
 <Code code={`// Config Server
 @SpringBootApplication
@@ -452,6 +516,10 @@ public class MiController {
 
 ### 68. ¿Qué es Service Discovery con Eureka?
 
+**¿Qué es?** Servidor de registro donde los microservicios se registran y descubren entre sí.
+
+**¿Para qué sirve?** No hardcodear URLs, balanceo de carga, alta disponibilidad.
+
 <Code code={`// Eureka Server
 @SpringBootApplication
 @EnableEurekaServer
@@ -477,6 +545,10 @@ eureka:
     prefer-ip-address: true`} lang="yaml" />
 
 ### 69. ¿Qué es Spring Cloud Gateway?
+
+**¿Qué es?** API Gateway reactivo para microservicios. Punto de entrada único.
+
+**Funciones:** Routing, filtros, rate limiting, circuit breaker, autenticación.
 
 <Code code={`@SpringBootApplication
 public class GatewayApplication {}
@@ -514,6 +586,10 @@ public class LoggingFilter implements GlobalFilter {
 }`} lang="yaml" />
 
 ### 70. ¿Qué es Resilience4j?
+
+**¿Qué es?** Librería de tolerancia a fallos para Java. Reemplazo de Hystrix.
+
+**Patrones:** Circuit Breaker, Retry, Rate Limiter, Bulkhead, Time Limiter.
 
 <Code code={`// Circuit Breaker
 @Service
@@ -555,6 +631,10 @@ resilience4j:
         limit-refresh-period: 1s`} lang="java" />
 
 ### 71. ¿Qué es Spring Cloud LoadBalancer?
+
+**¿Qué es?** Balanceador de carga del lado del cliente. Reemplazo de Ribbon.
+
+**¿Cómo funciona?** Usa nombre del servicio en vez de URL, resuelve instancias vía Service Discovery.
 
 <Code code={`// Configuración automática con service discovery
 
@@ -599,6 +679,10 @@ public class CustomLoadBalancerConfig {
 
 ### 72. ¿Qué es Spring Cloud Stream?
 
+**¿Qué es?** Framework para construir microservicios event-driven con message brokers.
+
+**Soporta:** Kafka, RabbitMQ, otros. Abstracción sobre el broker específico.
+
 <Code code={`// Mensajería con Kafka/RabbitMQ
 
 // Productor
@@ -640,6 +724,10 @@ spring:
 
 ### 73. ¿Qué es Spring Cloud Function?
 
+**¿Qué es?** Framework para escribir funciones serverless portables.
+
+**Despliega en:** AWS Lambda, Azure Functions, GCP Functions, Knative.
+
 <Code code={`// Funciones serverless
 
 @SpringBootApplication
@@ -671,6 +759,10 @@ spring:
 
 ### 74. ¿Qué es Distributed Tracing?
 
+**¿Qué es?** Seguimiento de requests a través de múltiples microservicios.
+
+**¿Para qué sirve?** Debugging, identificar cuellos de botella, entender flujos.
+
 <Code code={`// Dependencias
 // micrometer-tracing-bridge-brave
 // zipkin-reporter-brave
@@ -695,6 +787,10 @@ public void miMetodo() {
 }`} lang="yaml" />
 
 ### 75. ¿Qué es Spring Cloud Kubernetes?
+
+**¿Qué es?** Integración nativa de Spring Boot con Kubernetes.
+
+**Incluye:** Service Discovery via K8s, ConfigMaps como properties, Secrets.
 
 <Code code={`// Integración nativa con Kubernetes
 
@@ -728,6 +824,10 @@ spring:
 
 ### 76. ¿Qué es Spring Cloud Vault?
 
+**¿Qué es?** Integración con HashiCorp Vault para gestión de secretos.
+
+**¿Para qué sirve?** Secretos seguros, rotación automática de credenciales.
+
 <Code code={`// Integración con HashiCorp Vault
 
 spring:
@@ -754,6 +854,10 @@ spring:
         backend: database`} lang="yaml" />
 
 ### 77. ¿Qué es Spring Cloud OpenFeign?
+
+**¿Qué es?** Cliente HTTP declarativo con soporte para circuit breaker y load balancing.
+
+**Alternativa:** HTTP Interface Client (nativo desde Spring 6).
 
 <Code code={`// Cliente HTTP declarativo (alternativa a HTTP Interface)
 
@@ -787,6 +891,10 @@ public class UsuarioClientFallback implements UsuarioClient {
 public class Application {}`} lang="java" />
 
 ### 78. ¿Qué es el patrón Saga?
+
+**¿Qué es?** Patrón para manejar transacciones distribuidas mediante secuencia de transacciones locales.
+
+**Tipos:** Orquestación (coordinador central), Coreografía (eventos).
 
 <Code code={`// Saga para transacciones distribuidas
 
@@ -829,6 +937,10 @@ public class InventarioListener {
 }`} lang="java" />
 
 ### 79. ¿Qué es el patrón Outbox?
+
+**¿Qué es?** Patrón que garantiza consistencia entre BD y mensajería usando una tabla intermedia.
+
+**¿Cómo?** Guardar evento en tabla outbox en misma transacción, proceso separado publica a broker.
 
 <Code code={`// Garantizar consistencia entre BD y mensajería
 
@@ -877,6 +989,10 @@ public void processOutbox() {
 }`} lang="java" />
 
 ### 80. ¿Qué es CQRS con Spring?
+
+**¿Qué es?** Command Query Responsibility Segregation: separar modelos de lectura y escritura.
+
+**¿Para qué sirve?** Escalar lecturas/escrituras independientemente, optimizar cada modelo.
 
 <Code code={`// Command Query Responsibility Segregation
 
@@ -927,6 +1043,10 @@ public class PedidoProjection {
 
 ### 81. ¿Cómo estructurar un proyecto Spring Boot?
 
+**Estructura por capas:** controller, service, repository, model, config, exception.
+
+**Alternativa:** Estructura por features/módulos para proyectos grandes.
+
 <Code code={`src/main/java/com/ejemplo/
 ├── MiAplicacion.java
 ├── config/
@@ -952,6 +1072,10 @@ public class PedidoProjection {
     └── Mapper.java`} lang="text" />
 
 ### 82. ¿Qué es Hexagonal Architecture con Spring?
+
+**¿Qué es?** Arquitectura de puertos y adaptadores. El dominio en el centro, sin dependencias externas.
+
+**Beneficios:** Testabilidad, independencia de frameworks, flexibilidad.
 
 <Code code={`// Puertos y Adaptadores
 
@@ -997,6 +1121,10 @@ public class UsuarioRepositoryAdapter implements UsuarioRepository {
 
 ### 83. ¿Cómo implementar API Versioning?
 
+**Estrategias:** Por URL (`/v1/`), por Header (`X-API-VERSION`), por Media Type.
+
+**Recomendación:** URL versioning es más simple y visible.
+
 <Code code={`// Por URL
 @RestController
 @RequestMapping("/api/v1/usuarios")
@@ -1021,6 +1149,10 @@ public List<UsuarioV1> listarV1() {}
 public List<UsuarioV2> listarV2() {}`} lang="java" />
 
 ### 84. ¿Cómo implementar HATEOAS?
+
+**¿Qué es?** Hypermedia As The Engine Of Application State: incluir links en respuestas REST.
+
+**Beneficio:** Clientes descubren acciones disponibles dinámicamente.
 
 <Code code={`// Dependencia: spring-boot-starter-hateoas
 
@@ -1052,6 +1184,10 @@ public class UsuarioController {
 }`} lang="java" />
 
 ### 85. ¿Cómo documentar APIs con OpenAPI/Swagger?
+
+**¿Qué es?** Especificación estándar para documentar APIs REST.
+
+**Herramienta:** springdoc-openapi genera documentación automáticamente.
 
 <Code code={`// Dependencia: springdoc-openapi-starter-webmvc-ui
 
@@ -1094,6 +1230,10 @@ public class UsuarioController {
 
 ### 86. ¿Cómo implementar Rate Limiting?
 
+**¿Qué es?** Limitar número de requests por cliente/tiempo para proteger el servicio.
+
+**Herramientas:** Bucket4j, Resilience4j RateLimiter, Redis.
+
 <Code code={`// Con Bucket4j
 @Configuration
 public class RateLimitConfig {
@@ -1125,6 +1265,10 @@ public class RateLimitFilter extends OncePerRequestFilter {
 }`} lang="java" />
 
 ### 87. ¿Cómo implementar Caching?
+
+**¿Qué es?** Almacenar resultados frecuentes para reducir latencia y carga.
+
+**Anotaciones:** `@Cacheable`, `@CachePut`, `@CacheEvict`.
 
 <Code code={`@Configuration
 @EnableCaching
@@ -1168,6 +1312,10 @@ spring:
 
 ### 88. ¿Cómo implementar Health Checks personalizados?
 
+**¿Qué es?** Verificar estado de dependencias (BD, servicios externos).
+
+**Uso:** Kubernetes readiness/liveness probes, monitoreo.
+
 <Code code={`@Component
 public class DatabaseHealthIndicator implements HealthIndicator {
     
@@ -1202,6 +1350,10 @@ management:
           include: ping`} lang="java" />
 
 ### 89. ¿Cómo manejar archivos/uploads?
+
+**¿Cómo?** `MultipartFile` para uploads, `Resource` para downloads.
+
+**Configuración:** `spring.servlet.multipart.max-file-size`.
 
 <Code code={`@RestController
 @RequestMapping("/api/archivos")
@@ -1242,6 +1394,10 @@ spring:
 
 ### 90. ¿Cómo implementar WebSocket?
 
+**¿Qué es?** Comunicación bidireccional en tiempo real entre cliente y servidor.
+
+**Uso:** Chat, notificaciones, dashboards en vivo.
+
 <Code code={`@Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
@@ -1275,6 +1431,10 @@ public class ChatController {
 
 ### 91. ¿Cómo implementar Server-Sent Events?
 
+**¿Qué es?** Streaming unidireccional del servidor al cliente.
+
+**Diferencia con WebSocket:** Más simple, solo servidor->cliente, HTTP estándar.
+
 <Code code={`@RestController
 @RequestMapping("/api/eventos")
 public class EventoController {
@@ -1291,6 +1451,10 @@ public class EventoController {
 }`} lang="java" />
 
 ### 92. ¿Cómo implementar GraphQL con Spring?
+
+**¿Qué es?** Lenguaje de consulta para APIs. Cliente pide exactamente lo que necesita.
+
+**Ventajas:** No over-fetching, un endpoint, tipado fuerte.
 
 <Code code={`// Dependencia: spring-boot-starter-graphql
 
@@ -1343,6 +1507,10 @@ public class UsuarioGraphQLController {
 
 ### 93. ¿Cómo implementar Async Processing?
 
+**¿Qué es?** Ejecutar tareas en segundo plano sin bloquear el thread principal.
+
+**¿Cómo?** `@Async` + `@EnableAsync`. Retorna `CompletableFuture` o `void`.
+
 <Code code={`@Configuration
 @EnableAsync
 public class AsyncConfig {
@@ -1375,6 +1543,10 @@ public class EmailService {
 }`} lang="java" />
 
 ### 94. ¿Cómo implementar Batch Processing?
+
+**¿Qué es?** Procesar grandes volúmenes de datos en lotes (jobs).
+
+**Componentes:** Job, Step, ItemReader, ItemProcessor, ItemWriter.
 
 <Code code={`@Configuration
 @EnableBatchProcessing
@@ -1427,6 +1599,10 @@ public class BatchConfig {
 
 ### 95. ¿Cómo implementar Multi-tenancy?
 
+**¿Qué es?** Una aplicación sirve a múltiples clientes (tenants) aislados.
+
+**Estrategias:** Por schema, por base de datos, por columna discriminadora.
+
 <Code code={`// Por schema
 public class TenantContext {
     private static final ThreadLocal<String> TENANT = new ThreadLocal<>();
@@ -1478,6 +1654,10 @@ public class HibernateConfig {
 
 ### 96. ¿Cómo implementar Feature Flags?
 
+**¿Qué es?** Activar/desactivar funcionalidades sin redesplegar.
+
+**Herramientas:** Togglz, FF4j, LaunchDarkly.
+
 <Code code={`// Con Togglz
 @Configuration
 public class FeatureConfig {
@@ -1514,6 +1694,10 @@ public class MiServicio {
 
 ### 97. ¿Cómo implementar Idempotency?
 
+**¿Qué es?** Garantizar que múltiples requests idénticos producen el mismo resultado.
+
+**¿Cómo?** Idempotency-Key header + cache de resultados.
+
 <Code code={`@RestController
 public class PedidoController {
     
@@ -1540,6 +1724,10 @@ public class PedidoController {
 
 ### 98. ¿Cómo implementar Retry Pattern?
 
+**¿Qué es?** Reintentar operaciones fallidas automáticamente.
+
+**Herramientas:** Spring Retry (`@Retryable`), Resilience4j.
+
 <Code code={`@Configuration
 @EnableRetry
 public class RetryConfig {}
@@ -1564,6 +1752,10 @@ public class ExternalService {
 }`} lang="java" />
 
 ### 99. ¿Cómo implementar Graceful Shutdown?
+
+**¿Qué es?** Apagar la aplicación permitiendo que requests en curso terminen.
+
+**Configuración:** `server.shutdown=graceful` + timeout.
 
 <Code code={`// application.yml
 server:
@@ -1600,6 +1792,8 @@ public class MiServicio implements SmartLifecycle {
 }`} lang="java" />
 
 ### 100. ¿Cuáles son las mejores prácticas de Spring?
+
+**Principios clave para aplicaciones Spring Boot robustas:**
 
 1. **Usar constructor injection** en vez de field injection
 2. **Preferir interfaces** para servicios y repositorios

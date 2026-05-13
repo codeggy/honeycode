@@ -16,6 +16,9 @@ Esta guía cubre desde fundamentos hasta temas avanzados. Las preguntas 1-50 est
 
 ### 51. ¿Qué novedades trajo Java 8?
 
+**¿Por qué es importante?** Java 8 fue la actualización más significativa. Introdujo programación funcional.
+
+**Novedades principales:**
 - **Lambdas y Streams**
 - **Optional**
 - **Interfaces funcionales**
@@ -25,6 +28,10 @@ Esta guía cubre desde fundamentos hasta temas avanzados. Las preguntas 1-50 est
 - **Nashorn JavaScript Engine**
 
 ### 52. ¿Qué es la nueva API de Date/Time?
+
+**¿Qué es?** API moderna para fechas/horas que reemplaza a `Date` y `Calendar`.
+
+**Ventajas:** Inmutable, thread-safe, más intuitiva, soporte de zonas horarias.
 
 <Code code={`import java.time.*;
 
@@ -53,6 +60,10 @@ String formateado = fecha.format(formatter);
 LocalDate parseado = LocalDate.parse("15/03/1990", formatter);`} lang="java" />
 
 ### 53. ¿Qué novedades trajo Java 9?
+
+**Principal novedad:** Sistema de módulos (Project Jigsaw) para encapsular código.
+
+**Otras mejoras:** Factory methods para colecciones, mejoras en Stream y Optional.
 
 <Code code={`// Módulos (Project Jigsaw)
 module mi.modulo {
@@ -85,6 +96,10 @@ interface MiInterface {
 
 ### 54. ¿Qué novedades trajo Java 10?
 
+**Principal novedad:** `var` para inferencia de tipos en variables locales.
+
+**Importante:** Solo para variables locales con inicializador, NO para campos o parámetros.
+
 <Code code={`// var - inferencia de tipos local
 var lista = new ArrayList<String>(); // ArrayList<String>
 var mapa = Map.of("a", 1);           // Map<String, Integer>
@@ -96,6 +111,10 @@ var mapa = Map.of("a", 1);           // Map<String, Integer>
 List<String> copia = List.copyOf(listaOriginal);`} lang="java" />
 
 ### 55. ¿Qué novedades trajo Java 11?
+
+**¿Por qué es importante?** Primera versión LTS después de Java 8. Muy usada en producción.
+
+**Novedades:** `var` en lambdas, métodos de String, HttpClient, ejecutar .java directamente.
 
 <Code code={`// var en lambdas
 BiFunction<String, String, String> concat = 
@@ -123,6 +142,10 @@ String contenido = Files.readString(Path.of("archivo.txt"));
 Files.writeString(Path.of("archivo.txt"), "contenido");`} lang="java" />
 
 ### 56. ¿Qué novedades trajo Java 14-17?
+
+**Novedades clave:** Records, Pattern Matching, Switch expressions, Text blocks, Sealed classes.
+
+**Java 17 es LTS** - Versión recomendada para producción actualmente.
 
 <Code code={`// Records (Java 14 preview, 16 final)
 public record Persona(String nombre, int edad) {}
@@ -155,6 +178,10 @@ public final class Circulo extends Figura {}
 public non-sealed class Rectangulo extends Figura {}`} lang="java" />
 
 ### 57. ¿Qué novedades trajo Java 21?
+
+**¿Por qué es importante?** Última versión LTS. Incluye Virtual Threads (revolucionario para concurrencia).
+
+**Novedades:** Virtual Threads, Pattern Matching mejorado, Record Patterns, Sequenced Collections.
 
 <Code code={`// Virtual Threads (Project Loom)
 Thread.startVirtualThread(() -> {
@@ -189,6 +216,10 @@ seq.reversed();`} lang="java" />
 
 ### 58. ¿Qué son los Virtual Threads?
 
+**¿Qué es?** Threads ligeros gestionados por la JVM (no el OS). Puedes crear millones.
+
+**¿Para qué sirve?** Operaciones I/O-bound (HTTP, BD). NO para CPU-intensive.
+
 <Code code={`// Virtual Threads - threads ligeros (Project Loom)
 // Pueden crear millones sin problema
 
@@ -214,6 +245,10 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 // - No usar para CPU-intensive`} lang="java" />
 
 ### 59. ¿Qué es un Record?
+
+**¿Qué es?** Clase inmutable para transportar datos. Genera automáticamente constructor, getters, equals, hashCode, toString.
+
+**¿Para qué sirve?** DTOs, value objects, eliminar boilerplate.
 
 <Code code={`// Record - clase inmutable para datos
 public record Persona(String nombre, int edad) {
@@ -249,6 +284,10 @@ int edad = p.edad();
 
 ### 60. ¿Qué son las Sealed Classes?
 
+**¿Qué es?** Clases que restringen explícitamente qué otras clases pueden heredar de ellas.
+
+**¿Para qué sirve?** Modelar dominios cerrados, mejor pattern matching, control de jerarquía.
+
 <Code code={`// Sealed class - restringe qué clases pueden heredar
 public sealed class Figura 
     permits Circulo, Rectangulo, Triangulo {
@@ -278,6 +317,10 @@ double area = switch (figura) {
 };`} lang="java" />
 
 ### 61. ¿Qué es Pattern Matching?
+
+**¿Qué es?** Extraer datos de objetos de forma declarativa, combinando instanceof + cast + asignación.
+
+**Tipos:** Para instanceof, para switch, para records (deconstrucción).
 
 <Code code={`// Pattern Matching para instanceof
 Object obj = "Hola";
@@ -315,6 +358,10 @@ void procesar(Object obj) {
 
 ### 62. ¿Qué son los Text Blocks?
 
+**¿Qué es?** Strings multilínea con triple comilla. Preservan formato e indentación.
+
+**¿Para qué sirve?** JSON, HTML, SQL, cualquier texto largo.
+
 <Code code={`// Text Blocks - strings multilínea
 String json = """
     {
@@ -346,6 +393,10 @@ String saludo = """
 
 ### 63. ¿Qué son las Switch Expressions?
 
+**¿Qué es?** Switch que retorna un valor. Usa `->` en vez de `:` y no necesita break.
+
+**Ventajas:** Más conciso, sin fall-through accidental, exhaustivo.
+
 <Code code={`// Switch tradicional (statement)
 String tipo;
 switch (dia) {
@@ -376,6 +427,10 @@ String descripcion = switch (dia) {
 
 ### 64. ¿Qué es el Garbage Collector G1?
 
+**¿Qué es?** GC por defecto desde Java 9. Divide heap en regiones, prioriza las más llenas.
+
+**Características:** Pausas predecibles, ideal para heaps >4GB.
+
 <Code code={`// G1 GC - Garbage First (default desde Java 9)
 // Divide el heap en regiones de igual tamaño
 
@@ -399,7 +454,9 @@ String descripcion = switch (dia) {
 
 ### 65. ¿Qué es el JIT Compiler?
 
-El **Just-In-Time Compiler** compila bytecode a código nativo en tiempo de ejecución para mejorar performance.
+**¿Qué es?** Compilador que convierte bytecode a código nativo en runtime para mejorar performance.
+
+**Tipos:** C1 (rápido, menos optimizado), C2 (lento, más optimizado), Tiered (ambos, default).
 
 - **C1 (Client)**: Compilación rápida, menos optimizaciones
 - **C2 (Server)**: Compilación lenta, más optimizaciones
@@ -416,6 +473,10 @@ El **Just-In-Time Compiler** compila bytecode a código nativo en tiempo de ejec
 ## Patrones de Diseño (66-80)
 
 ### 66. ¿Qué es el patrón Factory?
+
+**¿Qué es?** Patrón que delega la creación de objetos a un método/clase especializada.
+
+**¿Para qué sirve?** Desacoplar creación de uso, crear objetos según condiciones.
 
 <Code code={`// Factory Method
 public interface Animal {
@@ -444,6 +505,10 @@ public class AnimalFactory {
 Animal animal = AnimalFactory.crear("perro");`} lang="java" />
 
 ### 67. ¿Qué es el patrón Builder?
+
+**¿Qué es?** Patrón para construir objetos complejos paso a paso.
+
+**¿Para qué sirve?** Objetos con muchos parámetros opcionales, inmutabilidad, legibilidad.
 
 <Code code={`public class Persona {
     private final String nombre;
@@ -499,6 +564,10 @@ Persona persona = new Persona.Builder()
 
 ### 68. ¿Qué es el patrón Observer?
 
+**¿Qué es?** Patrón donde un objeto (subject) notifica cambios a múltiples objetos dependientes (observers).
+
+**¿Para qué sirve?** Eventos, notificaciones, actualizaciones en tiempo real.
+
 <Code code={`import java.util.*;
 
 // Subject
@@ -539,6 +608,10 @@ notificador.notificar("Nuevo pedido");`} lang="java" />
 
 ### 69. ¿Qué es el patrón Strategy?
 
+**¿Qué es?** Patrón que define una familia de algoritmos intercambiables en runtime.
+
+**¿Para qué sirve?** Métodos de pago, algoritmos de ordenamiento, validaciones.
+
 <Code code={`// Strategy interface
 public interface EstrategiaPago {
     void pagar(double monto);
@@ -578,6 +651,10 @@ carrito.setEstrategia(new PagoTarjeta());
 carrito.checkout(100.0);`} lang="java" />
 
 ### 70. ¿Qué es el patrón Decorator?
+
+**¿Qué es?** Patrón que añade funcionalidad a objetos dinámicamente sin modificar su clase.
+
+**¿Para qué sirve?** Streams de Java, wrappers, extensiones de funcionalidad.
 
 <Code code={`// Component
 public interface Cafe {
@@ -622,6 +699,10 @@ System.out.println(cafe.getCosto());       // 1.7`} lang="java" />
 
 ### 71. ¿Qué es el patrón Adapter?
 
+**¿Qué es?** Patrón que permite que interfaces incompatibles trabajen juntas.
+
+**¿Para qué sirve?** Integrar librerías externas, legacy code, APIs diferentes.
+
 <Code code={`// Target interface
 public interface MediaPlayer {
     void play(String filename);
@@ -653,6 +734,10 @@ MediaPlayer player = new VlcAdapter();
 player.play("video.vlc");`} lang="java" />
 
 ### 72. ¿Qué es el patrón Proxy?
+
+**¿Qué es?** Patrón que proporciona un sustituto o placeholder para controlar acceso a otro objeto.
+
+**Tipos:** Virtual (lazy loading), Protection (control de acceso), Remote (objetos remotos).
 
 <Code code={`// Subject
 public interface Imagen {
@@ -698,6 +783,10 @@ public class ImagenProxy implements Imagen {
 
 ### 73. ¿Qué es el patrón Template Method?
 
+**¿Qué es?** Patrón que define el esqueleto de un algoritmo, delegando pasos a subclases.
+
+**¿Para qué sirve?** Reutilizar estructura común, permitir personalización de pasos específicos.
+
 <Code code={`// Abstract class con template method
 public abstract class Bebida {
     // Template method
@@ -742,6 +831,10 @@ public class Cafe extends Bebida {
 
 ### 74. ¿Qué es el patrón Command?
 
+**¿Qué es?** Patrón que encapsula una solicitud como objeto.
+
+**¿Para qué sirve?** Undo/redo, colas de comandos, logging, transacciones.
+
 <Code code={`// Command interface
 public interface Comando {
     void ejecutar();
@@ -783,6 +876,10 @@ public class Control {
 }`} lang="java" />
 
 ### 75. ¿Qué es el patrón State?
+
+**¿Qué es?** Patrón que permite a un objeto cambiar su comportamiento cuando cambia su estado interno.
+
+**¿Para qué sirve?** Máquinas de estado, workflows, evitar condicionales complejos.
 
 <Code code={`// State interface
 public interface Estado {
@@ -827,6 +924,10 @@ public class SinMoneda implements Estado {
 
 ### 76. ¿Qué es Dependency Injection?
 
+**¿Qué es?** Patrón donde las dependencias se proporcionan externamente en vez de crearlas internamente.
+
+**Beneficios:** Desacoplamiento, testabilidad, flexibilidad.
+
 <Code code={`// Sin DI (acoplado)
 public class ServicioUsuario {
     private RepositorioUsuario repo = new RepositorioUsuarioImpl();
@@ -857,6 +958,8 @@ ServicioUsuario servicio = new ServicioUsuario(repo);`} lang="java" />
 
 ### 77. ¿Qué es el principio SOLID?
 
+**¿Qué es?** Cinco principios de diseño orientado a objetos para código mantenible y escalable.
+
 | Principio | Descripción |
 |-----------|-------------|
 | **S**ingle Responsibility | Una clase, una responsabilidad |
@@ -866,6 +969,10 @@ ServicioUsuario servicio = new ServicioUsuario(repo);`} lang="java" />
 | **D**ependency Inversion | Depender de abstracciones, no de implementaciones |
 
 ### 78. ¿Qué es el patrón Repository?
+
+**¿Qué es?** Patrón que abstrae el acceso a datos, proporcionando una colección de objetos de dominio.
+
+**Beneficios:** Desacopla lógica de negocio de persistencia, facilita testing.
 
 <Code code={`// Repository interface
 public interface UsuarioRepository {
@@ -904,6 +1011,10 @@ public class UsuarioRepositoryImpl implements UsuarioRepository {
 
 ### 79. ¿Qué es el patrón Service Layer?
 
+**¿Qué es?** Capa que contiene la lógica de negocio, orquestando operaciones entre repositorios.
+
+**Responsabilidades:** Validaciones, transacciones, coordinación de operaciones.
+
 <Code code={`// Service layer - lógica de negocio
 @Service
 public class UsuarioService {
@@ -940,6 +1051,10 @@ public class UsuarioService {
 
 ### 80. ¿Qué es el patrón DTO?
 
+**¿Qué es?** Objeto para transferir datos entre capas/sistemas sin exponer entidades de dominio.
+
+**¿Para qué sirve?** Seguridad (ocultar campos), performance (solo datos necesarios).
+
 <Code code={`// DTO - Data Transfer Object
 public class UsuarioDTO {
     private String nombre;
@@ -974,6 +1089,10 @@ public class UsuarioMapper {
 ## Testing y Buenas Prácticas (81-90)
 
 ### 81. ¿Qué es JUnit 5?
+
+**¿Qué es?** Framework de testing para Java. Versión actual con arquitectura modular.
+
+**Componentes:** JUnit Platform, JUnit Jupiter (API), JUnit Vintage (compatibilidad).
 
 <Code code={`import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -1010,6 +1129,10 @@ class CalculadoraTest {
 }`} lang="java" />
 
 ### 82. ¿Qué es Mockito?
+
+**¿Qué es?** Framework para crear mocks (objetos simulados) en tests unitarios.
+
+**¿Para qué sirve?** Aislar la unidad bajo test, simular dependencias.
 
 <Code code={`import static org.mockito.Mockito.*;
 
@@ -1053,7 +1176,9 @@ class UsuarioServiceTest {
 
 ### 83. ¿Qué es TDD?
 
-**Test-Driven Development** - escribir tests antes del código:
+**¿Qué es?** Test-Driven Development: escribir tests ANTES del código de producción.
+
+**Ciclo:**
 
 1. **Red**: Escribir test que falla
 2. **Green**: Escribir código mínimo para pasar
@@ -1061,7 +1186,9 @@ class UsuarioServiceTest {
 
 ### 84. ¿Qué es BDD?
 
-**Behavior-Driven Development** - tests en lenguaje natural:
+**¿Qué es?** Behavior-Driven Development: tests escritos en lenguaje natural (Given-When-Then).
+
+**Herramientas:** Cucumber, JBehave.
 
 <Code code={`// Con Cucumber
 Feature: Login de usuario
@@ -1089,7 +1216,9 @@ public void verDashboard() {
 
 ### 85. ¿Qué es Code Coverage?
 
-Porcentaje de código ejecutado por tests. Herramientas: JaCoCo, Cobertura.
+**¿Qué es?** Porcentaje de código ejecutado por tests.
+
+**Herramientas:** JaCoCo, Cobertura. **Meta típica:** 80%+ para código crítico.
 
 <Code code={`// Maven con JaCoCo
 <plugin>
@@ -1114,6 +1243,10 @@ Porcentaje de código ejecutado por tests. Herramientas: JaCoCo, Cobertura.
 
 ### 86. ¿Qué son las anotaciones de validación?
 
+**¿Qué es?** Bean Validation (JSR 380): validar objetos con anotaciones.
+
+**Anotaciones comunes:** `@NotNull`, `@Size`, `@Email`, `@Min`, `@Max`, `@Pattern`.
+
 <Code code={`import jakarta.validation.constraints.*;
 
 public class UsuarioDTO {
@@ -1137,6 +1270,10 @@ public class UsuarioDTO {
 }`} lang="java" />
 
 ### 87. ¿Qué es logging en Java?
+
+**¿Qué es?** Registrar eventos de la aplicación para debugging y monitoreo.
+
+**Stack recomendado:** SLF4J (API) + Logback (implementación).
 
 <Code code={`import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1167,6 +1304,10 @@ public class MiServicio {
 
 ### 88. ¿Qué es Maven vs Gradle?
 
+**Maven:** Basado en XML, convención sobre configuración, más usado.
+
+**Gradle:** Basado en Groovy/Kotlin, más flexible y rápido.
+
 | Maven | Gradle |
 |-------|--------|
 | XML (pom.xml) | Groovy/Kotlin (build.gradle) |
@@ -1187,6 +1328,10 @@ dependencies {
 }`} lang="groovy" />
 
 ### 89. ¿Qué es Docker con Java?
+
+**¿Qué es?** Contenerizar aplicaciones Java para despliegue consistente.
+
+**Best practices:** Multi-stage builds, usar JRE (no JDK), imágenes Alpine.
 
 <Code code={`# Dockerfile
 FROM eclipse-temurin:21-jre-alpine
@@ -1211,6 +1356,8 @@ ENTRYPOINT ["java", "-jar", "app.jar"]`} lang="dockerfile" />
 
 ### 90. ¿Cuáles son las mejores prácticas de Java?
 
+**Principios clave para código limpio y mantenible:**
+
 1. **Usar tipos inmutables cuando sea posible**
 2. **Preferir composición sobre herencia**
 3. **Programar contra interfaces**
@@ -1228,43 +1375,63 @@ ENTRYPOINT ["java", "-jar", "app.jar"]`} lang="dockerfile" />
 
 ### 91. ¿Qué es una arquitectura de microservicios?
 
-Aplicación dividida en servicios pequeños, independientes, que se comunican por red (REST, mensajería).
+**¿Qué es?** Aplicación dividida en servicios pequeños, independientes, desplegables por separado.
+
+**Comunicación:** REST, gRPC, mensajería (Kafka, RabbitMQ).
 
 ### 92. ¿Qué es un API Gateway?
 
-Punto de entrada único para microservicios. Maneja: routing, autenticación, rate limiting, load balancing.
+**¿Qué es?** Punto de entrada único para microservicios.
+
+**Funciones:** Routing, autenticación, rate limiting, load balancing, transformación.
 
 ### 93. ¿Qué es Circuit Breaker?
 
-Patrón que previene cascada de fallos. Estados: Closed, Open, Half-Open.
+**¿Qué es?** Patrón que previene cascada de fallos cortando llamadas a servicios fallidos.
+
+**Estados:** Closed (normal), Open (bloqueado), Half-Open (probando).
 
 ### 94. ¿Qué es Event Sourcing?
 
-Almacenar cambios como eventos en vez de estado actual. Permite reconstruir estado y auditoría.
+**¿Qué es?** Almacenar cambios como secuencia de eventos en vez de estado actual.
+
+**Beneficios:** Auditoría completa, reconstruir estado, debugging temporal.
 
 ### 95. ¿Qué es CQRS?
 
-Command Query Responsibility Segregation - separar operaciones de lectura y escritura.
+**¿Qué es?** Command Query Responsibility Segregation: modelos separados para lectura y escritura.
+
+**¿Cuándo usarlo?** Sistemas con patrones de lectura/escritura muy diferentes.
 
 ### 96. ¿Qué es un Message Broker?
 
-Sistema de mensajería asíncrona (Kafka, RabbitMQ). Desacopla servicios.
+**¿Qué es?** Sistema de mensajería asíncrona que desacopla productores y consumidores.
+
+**Ejemplos:** Kafka (streaming), RabbitMQ (colas tradicionales).
 
 ### 97. ¿Qué es una base de datos NoSQL?
 
-Bases de datos no relacionales: Document (MongoDB), Key-Value (Redis), Column (Cassandra), Graph (Neo4j).
+**¿Qué es?** Bases de datos no relacionales, optimizadas para casos de uso específicos.
+
+**Tipos:** Document (MongoDB), Key-Value (Redis), Column (Cassandra), Graph (Neo4j).
 
 ### 98. ¿Qué es caching?
 
-Almacenar datos frecuentes en memoria rápida (Redis, Caffeine). Reduce latencia y carga de BD.
+**¿Qué es?** Almacenar datos frecuentes en memoria rápida para reducir latencia.
+
+**Herramientas:** Redis (distribuido), Caffeine (local), EhCache.
 
 ### 99. ¿Qué es un load balancer?
 
-Distribuye tráfico entre múltiples instancias. Tipos: Round Robin, Least Connections, IP Hash.
+**¿Qué es?** Distribuye tráfico entre múltiples instancias de un servicio.
+
+**Algoritmos:** Round Robin, Least Connections, IP Hash, Weighted.
 
 ### 100. ¿Qué es observabilidad?
 
-Capacidad de entender el estado interno del sistema: Logs, Métricas, Traces (OpenTelemetry, Prometheus, Grafana).
+**¿Qué es?** Capacidad de entender el estado interno del sistema.
+
+**Pilares:** Logs, Métricas, Traces. **Herramientas:** OpenTelemetry, Prometheus, Grafana, Jaeger.
 
 ---
 

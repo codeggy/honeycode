@@ -16,6 +16,10 @@ Esta guía cubre desde fundamentos hasta temas avanzados. Las preguntas 1-50 est
 
 ### 51. ¿Qué es el patrón Singleton?
 
+**¿Qué es?** Patrón que garantiza una única instancia de una clase en toda la aplicación.
+
+**¿Para qué sirve?** Configuración global, conexiones a BD, caché, loggers.
+
 <Code code={`const Singleton = (function() {
   let instance;
   
@@ -39,6 +43,10 @@ console.log(a === b); // true`} lang="javascript" />
 
 ### 52. ¿Qué es el patrón Factory?
 
+**¿Qué es?** Patrón que delega la creación de objetos a una función/clase especializada.
+
+**¿Para qué sirve?** Desacoplar la creación de objetos de su uso. Crear objetos según condiciones.
+
 <Code code={`class CarFactory {
   createCar(type) {
     switch(type) {
@@ -56,6 +64,10 @@ const factory = new CarFactory();
 const miCarro = factory.createCar('sedan');`} lang="javascript" />
 
 ### 53. ¿Qué es el patrón Observer?
+
+**¿Qué es?** Patrón donde objetos (observers) se suscriben a eventos de otro objeto (subject).
+
+**¿Para qué sirve?** Event emitters, pub/sub, actualizaciones reactivas.
 
 <Code code={`class EventEmitter {
   constructor() {
@@ -85,6 +97,10 @@ const miCarro = factory.createCar('sedan');`} lang="javascript" />
 
 ### 54. ¿Qué es el patrón Decorator?
 
+**¿Qué es?** Patrón que añade funcionalidad a una función/objeto sin modificar su código original.
+
+**¿Para qué sirve?** Logging, caching, validación, permisos.
+
 <Code code={`function withLogging(fn) {
   return function(...args) {
     console.log(\`Llamando \${fn.name} con:\`, args);
@@ -102,6 +118,10 @@ const sumarConLog = withLogging(sumar);
 sumarConLog(2, 3);`} lang="javascript" />
 
 ### 55. ¿Qué es currying?
+
+**¿Qué es?** Transformar una función de múltiples argumentos en una secuencia de funciones de un argumento.
+
+**¿Para qué sirve?** Crear funciones parcialmente aplicadas, composición funcional.
 
 <Code code={`// Función normal
 function sumar(a, b, c) {
@@ -125,6 +145,10 @@ const curry = a => b => c => a + b + c;`} lang="javascript" />
 
 ### 56. ¿Qué es composición de funciones?
 
+**¿Qué es?** Combinar funciones simples para crear funciones más complejas.
+
+**Tipos:** `compose` (derecha a izquierda), `pipe` (izquierda a derecha).
+
 <Code code={`const compose = (...fns) => x => 
   fns.reduceRight((acc, fn) => fn(acc), x);
 
@@ -139,6 +163,10 @@ const composed = compose(square, double, addOne);
 console.log(composed(2)); // ((2+1)*2)^2 = 36`} lang="javascript" />
 
 ### 57. ¿Qué es memoización?
+
+**¿Qué es?** Técnica de optimización que cachea resultados de funciones para evitar recálculos.
+
+**¿Para qué sirve?** Funciones costosas con los mismos argumentos repetidos (ej: Fibonacci).
 
 <Code code={`function memoize(fn) {
   const cache = new Map();
@@ -163,6 +191,10 @@ const fibonacci = memoize(function(n) {
 
 ### 58. ¿Qué es programación funcional?
 
+**¿Qué es?** Paradigma basado en funciones puras, inmutabilidad y composición.
+
+**Principios:** Funciones puras, sin efectos secundarios, datos inmutables, funciones como valores.
+
 <Code code={`// Principios:
 // 1. Funciones puras
 // 2. Inmutabilidad
@@ -181,6 +213,10 @@ const total = nums.reduce((acc, n) => acc + n, 0);`} lang="javascript" />
 
 ### 59. ¿Qué es recursión y tail recursion?
 
+**Recursión:** Función que se llama a sí misma.
+
+**Tail recursion:** La llamada recursiva es la última operación. Puede optimizarse para evitar stack overflow.
+
 <Code code={`// Recursión normal
 function factorial(n) {
   if (n <= 1) return 1;
@@ -194,6 +230,10 @@ function factorialTail(n, acc = 1) {
 }`} lang="javascript" />
 
 ### 60. ¿Qué es el patrón Strategy?
+
+**¿Qué es?** Patrón que define una familia de algoritmos intercambiables.
+
+**¿Para qué sirve?** Cambiar comportamiento en runtime sin modificar el código cliente.
 
 <Code code={`const strategies = {
   add: (a, b) => a + b,
@@ -209,6 +249,10 @@ calculate('add', 5, 3);      // 8
 calculate('multiply', 5, 3); // 15`} lang="javascript" />
 
 ### 61. ¿Qué es el patrón Command?
+
+**¿Qué es?** Patrón que encapsula una acción como objeto.
+
+**¿Para qué sirve?** Undo/redo, colas de comandos, logging de acciones.
 
 <Code code={`class Calculator {
   constructor() {
@@ -239,6 +283,10 @@ class AddCommand {
 
 ### 62. ¿Qué es lazy evaluation?
 
+**¿Qué es?** Evaluar expresiones solo cuando se necesitan, no antes.
+
+**¿Para qué sirve?** Trabajar con secuencias infinitas, mejorar performance.
+
 <Code code={`function* lazyRange(start, end) {
   for (let i = start; i <= end; i++) {
     yield i;
@@ -251,6 +299,10 @@ console.log(range.next().value); // 1
 console.log(range.next().value); // 2`} lang="javascript" />
 
 ### 63. ¿Qué es el patrón Middleware?
+
+**¿Qué es?** Cadena de funciones que procesan una request/context secuencialmente.
+
+**¿Para qué sirve?** Express.js, Redux, pipelines de procesamiento.
 
 <Code code={`class Pipeline {
   constructor() {
@@ -278,6 +330,10 @@ pipeline
   .use((ctx, next) => { ctx.b = 2; next(); });`} lang="javascript" />
 
 ### 64. ¿Qué es el patrón Pub/Sub?
+
+**¿Qué es?** Patrón donde publishers envían mensajes sin saber quién los recibe.
+
+**Diferencia con Observer:** Pub/Sub tiene un intermediario (broker), Observer es directo.
 
 <Code code={`const PubSub = {
   subscribers: {},
@@ -307,6 +363,10 @@ pipeline
 
 ### 65. ¿Qué es inmutabilidad y cómo lograrla?
 
+**¿Qué es?** No modificar datos existentes, crear copias con los cambios.
+
+**¿Para qué sirve?** Predecibilidad, debugging, React/Redux, evitar bugs.
+
 <Code code={`// Mutable (evitar)
 const arr = [1, 2, 3];
 arr.push(4); // Modifica el original
@@ -334,9 +394,15 @@ function deepFreeze(obj) {
 
 ### 66. ¿Qué es el garbage collection?
 
-JavaScript usa un recolector de basura automático que libera memoria de objetos que ya no son accesibles. Usa el algoritmo "mark-and-sweep".
+**¿Qué es?** Proceso automático que libera memoria de objetos no accesibles.
+
+**Algoritmo:** Mark-and-sweep. Marca objetos alcanzables desde root, elimina el resto.
 
 ### 67. ¿Qué son memory leaks y cómo evitarlos?
+
+**¿Qué es?** Memoria que no se libera porque aún hay referencias a objetos no usados.
+
+**Causas comunes:** Variables globales, closures, event listeners, timers.
 
 <Code code={`// Causas comunes:
 // 1. Variables globales accidentales
@@ -362,6 +428,10 @@ const id = setInterval(() => {}, 1000);
 
 ### 68. ¿Qué es requestAnimationFrame?
 
+**¿Qué es?** API para ejecutar código sincronizado con el refresh del monitor (60fps).
+
+**¿Para qué sirve?** Animaciones suaves. Mejor que setInterval porque se pausa en tabs inactivos.
+
 <Code code={`function animate() {
   // Actualizar animación
   element.style.left = position + 'px';
@@ -376,6 +446,10 @@ requestAnimationFrame(animate);
 // Mejor que setInterval para animaciones (60fps)`} lang="javascript" />
 
 ### 69. ¿Qué es Web Workers?
+
+**¿Qué es?** Threads en segundo plano para ejecutar JavaScript sin bloquear la UI.
+
+**¿Para qué sirve?** Cálculos pesados, procesamiento de datos, sin congelar la página.
 
 <Code code={`// main.js
 const worker = new Worker('worker.js');
@@ -393,6 +467,10 @@ self.onmessage = function(e) {
 };`} lang="javascript" />
 
 ### 70. ¿Qué es Service Worker?
+
+**¿Qué es?** Script que actúa como proxy entre la app y la red.
+
+**¿Para qué sirve?** PWAs, offline support, caching, push notifications.
 
 <Code code={`// Registro
 if ('serviceWorker' in navigator) {
@@ -418,6 +496,10 @@ self.addEventListener('fetch', (event) => {
 
 ### 71. ¿Qué es lazy loading?
 
+**¿Qué es?** Cargar recursos solo cuando se necesitan, no al inicio.
+
+**¿Para qué sirve?** Mejorar tiempo de carga inicial, reducir ancho de banda.
+
 <Code code={`// Imágenes
 <img loading="lazy" src="imagen.jpg" />
 
@@ -428,6 +510,10 @@ const module = await import('./heavyModule.js');
 const HeavyComponent = React.lazy(() => import('./HeavyComponent'));`} lang="javascript" />
 
 ### 72. ¿Qué es code splitting?
+
+**¿Qué es?** Dividir el bundle en partes más pequeñas que se cargan bajo demanda.
+
+**¿Cómo?** Dynamic imports (`import()`), React.lazy, configuración de bundler.
 
 <Code code={`// Webpack dynamic imports
 import('./module').then(module => {
@@ -447,7 +533,9 @@ function App() {
 
 ### 73. ¿Qué es tree shaking?
 
-Tree shaking elimina código no utilizado del bundle final. Funciona con ES modules (import/export).
+**¿Qué es?** Técnica que elimina código no utilizado (dead code) del bundle final.
+
+**Requisito:** Usar ES modules (import/export). CommonJS no es tree-shakeable.
 
 <Code code={`// utils.js
 export function usada() { }
@@ -458,6 +546,8 @@ import { usada } from './utils';
 // noUsada() será eliminada del bundle`} lang="javascript" />
 
 ### 74. ¿Cómo optimizar loops?
+
+**Consejos:** Cachear length, evitar accesos repetidos al DOM, usar métodos de array cuando sea legible.
 
 <Code code={`// Malo - accede a length en cada iteración
 for (let i = 0; i < array.length; i++) {}
@@ -474,11 +564,17 @@ for (const item of array) {}`} lang="javascript" />
 
 ### 75. ¿Qué es el Virtual DOM?
 
-El Virtual DOM es una representación en memoria del DOM real. Frameworks como React lo usan para minimizar manipulaciones costosas del DOM real, comparando estados y aplicando solo los cambios necesarios.
+**¿Qué es?** Representación en memoria del DOM real (objeto JavaScript).
+
+**¿Para qué sirve?** Minimizar manipulaciones costosas del DOM. React compara VDOMs y aplica solo cambios necesarios (reconciliación).
 
 ### 76. ¿Qué es el Critical Rendering Path?
 
-Es la secuencia de pasos que el navegador sigue para convertir HTML, CSS y JavaScript en píxeles:
+**¿Qué es?** Secuencia de pasos del navegador para convertir HTML/CSS/JS en píxeles.
+
+**Optimización:** Minimizar CSS crítico, diferir JS no esencial, reducir render-blocking resources.
+
+**Pasos:**
 1. DOM Construction
 2. CSSOM Construction
 3. Render Tree
@@ -486,6 +582,10 @@ Es la secuencia de pasos que el navegador sigue para convertir HTML, CSS y JavaS
 5. Paint
 
 ### 77. ¿Qué es reflow y repaint?
+
+**Reflow:** Recalcular geometría (posición, tamaño). Costoso.
+
+**Repaint:** Redibujar apariencia (color, sombra). Menos costoso.
 
 <Code code={`// Reflow (costoso) - cambia geometría
 element.style.width = '100px';
@@ -500,6 +600,10 @@ element.style.cssText = 'width: 100px; height: 100px;';
 // O usar clases CSS`} lang="javascript" />
 
 ### 78. ¿Qué es el patrón de Object Pool?
+
+**¿Qué es?** Reutilizar objetos en vez de crear/destruir constantemente.
+
+**¿Para qué sirve?** Juegos, animaciones, objetos costosos de crear.
 
 <Code code={`class ObjectPool {
   constructor(createFn, size = 10) {
@@ -518,6 +622,8 @@ element.style.cssText = 'width: 100px; height: 100px;';
 
 ### 79. ¿Cómo medir performance?
 
+**APIs:** `performance.mark/measure`, `console.time`, Chrome DevTools Performance tab.
+
 <Code code={`// Performance API
 performance.mark('start');
 // ... código a medir
@@ -533,6 +639,10 @@ console.time('operacion');
 console.timeEnd('operacion');`} lang="javascript" />
 
 ### 80. ¿Qué es BigInt?
+
+**¿Qué es?** Tipo de dato para enteros arbitrariamente grandes (más allá de `Number.MAX_SAFE_INTEGER`).
+
+**Sintaxis:** `123n` o `BigInt("123")`.
 
 <Code code={`// Number tiene límite
 const max = Number.MAX_SAFE_INTEGER; // 9007199254740991
@@ -551,6 +661,10 @@ const suma = big + 1n;
 
 ### 81. ¿Qué es XSS y cómo prevenirlo?
 
+**¿Qué es?** Cross-Site Scripting: inyección de scripts maliciosos en páginas web.
+
+**Prevención:** Escapar output, usar `textContent` en vez de `innerHTML`, CSP headers.
+
 <Code code={`// Cross-Site Scripting - inyección de scripts maliciosos
 
 // Vulnerable
@@ -568,9 +682,15 @@ function sanitize(str) {
 
 ### 82. ¿Qué es CSRF?
 
-Cross-Site Request Forgery - ataque que fuerza al usuario a ejecutar acciones no deseadas. Prevención: tokens CSRF, SameSite cookies.
+**¿Qué es?** Cross-Site Request Forgery: ataque que fuerza al usuario a ejecutar acciones no deseadas.
+
+**Prevención:** Tokens CSRF, SameSite cookies, verificar Origin header.
 
 ### 83. ¿Qué es CORS?
+
+**¿Qué es?** Cross-Origin Resource Sharing: mecanismo que permite requests entre diferentes orígenes.
+
+**¿Cómo funciona?** El servidor incluye headers `Access-Control-Allow-*`.
 
 <Code code={`// Cross-Origin Resource Sharing
 // Servidor debe incluir headers:
@@ -585,12 +705,16 @@ fetch('https://api.externa.com/data', {
 
 ### 84. ¿Qué es Content Security Policy?
 
-CSP es un header HTTP que previene XSS especificando qué recursos pueden cargarse.
+**¿Qué es?** Header HTTP que especifica qué recursos pueden cargarse.
+
+**¿Para qué sirve?** Prevenir XSS, clickjacking, inyección de recursos maliciosos.
 
 <Code code={`// Header HTTP
 Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.com`} lang="http" />
 
 ### 85. ¿Cómo manejar datos sensibles?
+
+**Reglas:** Nunca en código fuente, usar env vars, httpOnly cookies para tokens, nunca localStorage para auth.
 
 <Code code={`// Nunca en código
 const API_KEY = "abc123"; // MAL
@@ -602,6 +726,10 @@ const API_KEY = process.env.API_KEY;
 // Usar httpOnly cookies para auth tokens`} lang="javascript" />
 
 ### 86. ¿Qué es eval y por qué evitarlo?
+
+**¿Qué es?** Función que ejecuta strings como código JavaScript.
+
+**¿Por qué evitarlo?** Riesgo de seguridad (inyección), lento, difícil de debuggear.
 
 <Code code={`// eval ejecuta código arbitrario - PELIGROSO
 eval("alert('hacked')");
@@ -615,9 +743,13 @@ new Function('return ' + expression)();`} lang="javascript" />
 
 ### 87. ¿Qué es el principio de menor privilegio?
 
-Dar solo los permisos mínimos necesarios. En JavaScript: limitar scope de variables, usar const por defecto, encapsular código.
+**¿Qué es?** Dar solo los permisos mínimos necesarios para funcionar.
+
+**En JS:** Limitar scope (const/let), encapsular código, módulos, closures.
 
 ### 88. ¿Cómo validar input del usuario?
+
+**Regla:** Validar en cliente (UX) Y en servidor (seguridad). Nunca confiar solo en validación del cliente.
 
 <Code code={`function validateEmail(email) {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -634,9 +766,15 @@ function sanitizeInput(input) {
 
 ### 89. ¿Qué son los Source Maps?
 
-Archivos que mapean código minificado/transpilado al código fuente original para debugging. No incluir en producción si el código es sensible.
+**¿Qué es?** Archivos que mapean código minificado/transpilado al fuente original.
+
+**¿Para qué sirve?** Debugging en producción. **Cuidado:** No exponer si el código es sensible.
 
 ### 90. ¿Qué es Subresource Integrity (SRI)?
+
+**¿Qué es?** Verificar que recursos externos (CDN) no han sido modificados.
+
+**¿Cómo?** Hash del contenido esperado en el atributo `integrity`.
 
 <Code code={`<script 
   src="https://cdn.example.com/lib.js"
@@ -650,20 +788,28 @@ Archivos que mapean código minificado/transpilado al código fuente original pa
 
 ### 91. ¿Qué es optional chaining (?.) ?
 
+**¿Qué es?** Operador que accede a propiedades anidadas sin error si alguna es null/undefined.
+
 <Code code={`const user = { profile: { name: 'Juan' } };
 const city = user?.address?.city; // undefined, no error`} lang="javascript" />
 
 ### 92. ¿Qué es nullish coalescing (??) ?
+
+**¿Qué es?** Operador que retorna el lado derecho solo si el izquierdo es null/undefined (no 0 o '').
 
 <Code code={`const value = null ?? 'default'; // 'default'
 const zero = 0 ?? 'default';     // 0`} lang="javascript" />
 
 ### 93. ¿Qué es Promise.allSettled?
 
+**¿Qué es?** Espera a que TODAS las promises terminen (resueltas o rechazadas). Nunca rechaza.
+
 <Code code={`const results = await Promise.allSettled([p1, p2, p3]);
 // Siempre resuelve, nunca rechaza`} lang="javascript" />
 
 ### 94. ¿Qué es globalThis?
+
+**¿Qué es?** Referencia al objeto global que funciona en cualquier entorno (browser, Node, Worker).
 
 <Code code={`// Funciona en todos los entornos
 globalThis.myGlobal = 'value';
@@ -671,20 +817,28 @@ globalThis.myGlobal = 'value';
 
 ### 95. ¿Qué es import.meta?
 
+**¿Qué es?** Objeto con metadatos del módulo actual (URL, env vars en Vite, etc.).
+
 <Code code={`console.log(import.meta.url);
 // URL del módulo actual`} lang="javascript" />
 
 ### 96. ¿Qué es String.prototype.replaceAll?
+
+**¿Qué es?** Método que reemplaza TODAS las ocurrencias de un string (no solo la primera).
 
 <Code code={`const str = 'foo-bar-baz';
 str.replaceAll('-', '_'); // 'foo_bar_baz'`} lang="javascript" />
 
 ### 97. ¿Qué es Promise.any?
 
+**¿Qué es?** Resuelve con la PRIMERA promise que tenga éxito. Solo rechaza si TODAS fallan.
+
 <Code code={`const first = await Promise.any([p1, p2, p3]);
 // Primera que resuelva exitosamente`} lang="javascript" />
 
 ### 98. ¿Qué son los Logical Assignment Operators?
+
+**¿Qué es?** Combinan operadores lógicos con asignación: `||=`, `&&=`, `??=`.
 
 <Code code={`// ||= (or assignment)
 x ||= y; // x = x || y
@@ -697,6 +851,10 @@ x ??= y; // x = x ?? y`} lang="javascript" />
 
 ### 99. ¿Qué es WeakRef?
 
+**¿Qué es?** Referencia débil a un objeto que no previene garbage collection.
+
+**¿Para qué sirve?** Caches, evitar memory leaks en referencias circulares.
+
 <Code code={`let obj = { data: 'importante' };
 const weakRef = new WeakRef(obj);
 
@@ -707,6 +865,10 @@ obj = null;
 const deref = weakRef.deref();`} lang="javascript" />
 
 ### 100. ¿Qué es FinalizationRegistry?
+
+**¿Qué es?** API para ejecutar código cuando un objeto es garbage collected.
+
+**Uso:** Limpieza de recursos, logging, debugging.
 
 <Code code={`const registry = new FinalizationRegistry((heldValue) => {
   console.log(\`\${heldValue} fue recolectado\`);

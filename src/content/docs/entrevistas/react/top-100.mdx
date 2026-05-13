@@ -16,7 +16,9 @@ Esta guía cubre desde fundamentos hasta temas avanzados. Las preguntas 1-50 est
 
 ### 51. ¿Qué es Redux y cuándo usarlo?
 
-Redux es una biblioteca de gestión de estado predecible. Usar cuando:
+**¿Qué es?** Librería de gestión de estado global con flujo unidireccional: Action → Reducer → Store → View.
+
+**¿Cuándo usarlo?**
 - Estado compartido entre muchos componentes
 - Lógica de estado compleja
 - Necesitas debugging avanzado (time-travel)
@@ -38,6 +40,10 @@ function counterReducer(state = { count: 0 }, action) {
 store.dispatch({ type: 'INCREMENT' });`} lang="javascript" />
 
 ### 52. ¿Qué es Redux Toolkit?
+
+**¿Qué es?** La forma oficial y moderna de usar Redux. Reduce el boilerplate significativamente.
+
+**Incluye:** `createSlice` (reducer + actions), `configureStore` (setup automático), Immer (mutaciones inmutables).
 
 <Code code={`import { createSlice, configureStore } from '@reduxjs/toolkit';
 
@@ -64,6 +70,10 @@ const store = configureStore({
 
 ### 53. ¿Qué es Zustand?
 
+**¿Qué es?** Librería de estado global minimalista. Solo 1KB, sin boilerplate, basada en hooks.
+
+**¿Para qué sirve?** Alternativa simple a Redux cuando no necesitas toda su complejidad.
+
 <Code code={`import { create } from 'zustand';
 
 const useStore = create((set) => ({
@@ -80,6 +90,10 @@ function Counter() {
 }`} lang="jsx" />
 
 ### 54. ¿Qué es Jotai?
+
+**¿Qué es?** Librería de estado atómico. Cada pieza de estado es un "atom" independiente.
+
+**¿Para qué sirve?** Estado granular sin re-renders innecesarios. Ideal para estado derivado.
 
 <Code code={`import { atom, useAtom } from 'jotai';
 
@@ -101,6 +115,10 @@ function Counter() {
 
 ### 55. ¿Qué es Recoil?
 
+**¿Qué es?** Librería de estado atómico creada por Facebook. Similar a Jotai pero con más features.
+
+**Conceptos:** `atom` (estado), `selector` (estado derivado), keys únicos obligatorios.
+
 <Code code={`import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 
 const textState = atom({
@@ -120,6 +138,8 @@ function CharacterCount() {
 
 ### 56. ¿Cuál es la diferencia entre Redux, Zustand, Jotai y Recoil?
 
+**Resumen:** Redux es robusto pero complejo. Zustand es simple. Jotai/Recoil son atómicos (estado granular).
+
 | Característica | Redux | Zustand | Jotai | Recoil |
 |----------------|-------|---------|-------|--------|
 | Boilerplate | Alto | Bajo | Bajo | Medio |
@@ -129,6 +149,10 @@ function CharacterCount() {
 | Patrón | Flux | Flux-like | Atómico | Atómico |
 
 ### 57. ¿Qué es React Query / TanStack Query?
+
+**¿Qué es?** Librería para manejar "server state" (datos del servidor). NO es para estado local.
+
+**¿Para qué sirve?** Caching, refetch automático, loading/error states, invalidación, paginación.
 
 <Code code={`import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -158,6 +182,10 @@ function Posts() {
 
 ### 58. ¿Qué es SWR?
 
+**¿Qué es?** Librería de Vercel para data fetching. Nombre viene de "stale-while-revalidate".
+
+**¿Para qué sirve?** Similar a React Query pero más simple. Ideal para proyectos Next.js.
+
 <Code code={`import useSWR from 'swr';
 
 const fetcher = (url) => fetch(url).then(res => res.json());
@@ -181,6 +209,8 @@ function Profile() {
 
 ### 59. ¿Cuándo usar React Query vs Redux?
 
+**Regla simple:** React Query para datos del servidor, Redux para estado de la UI.
+
 | React Query | Redux |
 |-------------|-------|
 | Server state | Client state |
@@ -189,6 +219,10 @@ function Profile() {
 | Datos remotos | Datos locales |
 
 ### 60. ¿Qué es el patrón de estado derivado?
+
+**¿Qué es?** Calcular valores a partir de otro estado en vez de duplicar.
+
+**Regla:** Si un valor puede calcularse de otro, NO lo guardes en estado separado.
 
 <Code code={`// MAL - duplicar estado
 const [items, setItems] = useState([]);
@@ -204,6 +238,10 @@ const filteredItems = useMemo(() =>
 );`} lang="jsx" />
 
 ### 61. ¿Qué es el patrón de estado normalizado?
+
+**¿Qué es?** Estructurar estado como base de datos: entidades separadas con IDs como referencias.
+
+**¿Para qué sirve?** Evitar duplicación, facilitar actualizaciones, mejor performance.
 
 <Code code={`// Desnormalizado (evitar)
 const state = {
@@ -230,6 +268,10 @@ const state = {
 
 ### 62. ¿Cómo persistir estado?
 
+**¿Qué es?** Guardar estado en localStorage/sessionStorage para que sobreviva recargas de página.
+
+**¿Cómo?** Usar middleware de persistencia (Zustand, Redux Persist) o custom hooks.
+
 <Code code={`// Con Zustand
 import { persist } from 'zustand/middleware';
 
@@ -248,6 +290,10 @@ const useStore = create(
 
 ### 63. ¿Qué es el patrón de selectors?
 
+**¿Qué es?** Funciones que extraen y transforman datos del estado global.
+
+**¿Para qué sirve?** Encapsular lógica de acceso, memoizar cálculos, desacoplar componentes del shape del estado.
+
 <Code code={`// Selector - función que extrae datos del estado
 const selectTodos = (state) => state.todos;
 const selectCompletedTodos = (state) => 
@@ -262,6 +308,10 @@ const selectCompletedTodos = createSelector(
 );`} lang="javascript" />
 
 ### 64. ¿Qué es middleware en Redux?
+
+**¿Qué es?** Funciones que interceptan actions antes de llegar al reducer.
+
+**¿Para qué sirve?** Logging, async operations, analytics, validaciones.
 
 <Code code={`// Middleware personalizado
 const loggerMiddleware = (store) => (next) => (action) => {
@@ -279,6 +329,10 @@ const store = configureStore({
 });`} lang="javascript" />
 
 ### 65. ¿Qué es Redux Thunk vs Redux Saga?
+
+**Thunk:** Middleware simple para async. Actions pueden ser funciones.
+
+**Saga:** Middleware avanzado con generators. Para flujos complejos (cancelación, retry, race conditions).
 
 <Code code={`// Thunk - funciones async simples
 const fetchUser = (id) => async (dispatch) => {
@@ -307,6 +361,10 @@ function* fetchUserSaga(action) {
 
 ### 66. ¿Qué es Automatic Batching?
 
+**¿Qué es?** React 18 agrupa múltiples actualizaciones de estado en UN solo re-render.
+
+**Antes (React 17):** Solo en event handlers. **Ahora:** En todas partes (setTimeout, promises, etc.).
+
 <Code code={`// React 17 - solo batching en event handlers
 // React 18 - batching automático en todas partes
 
@@ -328,6 +386,10 @@ import { flushSync } from 'react-dom';
 flushSync(() => setCount(c => c + 1));`} lang="jsx" />
 
 ### 67. ¿Qué son los Server Components?
+
+**¿Qué es?** Componentes que se ejecutan SOLO en el servidor. No se envían al cliente.
+
+**Beneficios:** Acceso directo a BD, bundle más pequeño, mejor SEO, datos sensibles seguros.
 
 <Code code={`// Server Component (por defecto en Next.js 13+)
 // - Se ejecuta en el servidor
@@ -353,6 +415,8 @@ function Counter() {
 
 ### 68. ¿Cuál es la diferencia entre Server y Client Components?
 
+**Regla simple:** Server por defecto, Client solo cuando necesitas interactividad (estado, eventos, hooks de browser).
+
 | Server Components | Client Components |
 |-------------------|-------------------|
 | Se ejecutan en servidor | Se ejecutan en cliente |
@@ -362,6 +426,10 @@ function Counter() {
 | Por defecto | Requieren 'use client' |
 
 ### 69. ¿Qué es Streaming SSR?
+
+**¿Qué es?** Enviar HTML progresivamente mientras se renderiza, en vez de esperar a que todo esté listo.
+
+**Beneficio:** El usuario ve contenido más rápido. Suspense muestra fallbacks mientras carga.
 
 <Code code={`// Permite enviar HTML progresivamente
 import { Suspense } from 'react';
@@ -384,6 +452,10 @@ function Page() {
 
 ### 70. ¿Qué es el hook use?
 
+**¿Qué es?** Hook de React 19 que puede leer promises y context directamente.
+
+**¿Para qué sirve?** Simplificar data fetching con Suspense. Puede usarse condicionalmente (a diferencia de otros hooks).
+
 <Code code={`// React 19 - hook use para promises y context
 import { use } from 'react';
 
@@ -401,6 +473,10 @@ function Theme() {
 }`} lang="jsx" />
 
 ### 71. ¿Qué son las Server Actions?
+
+**¿Qué es?** Funciones asíncronas que se ejecutan en el servidor, llamadas desde el cliente.
+
+**¿Para qué sirve?** Mutaciones de datos sin crear API routes. Se marcan con `'use server'`.
 
 <Code code={`// Server Action - función que se ejecuta en servidor
 async function createPost(formData) {
@@ -423,6 +499,10 @@ function NewPostForm() {
 
 ### 72. ¿Qué es useFormStatus?
 
+**¿Qué es?** Hook que da información sobre el estado de un form padre (pending, data, method, action).
+
+**¿Para qué sirve?** Mostrar loading en botones de submit mientras el form se procesa.
+
 <Code code={`'use client';
 import { useFormStatus } from 'react-dom';
 
@@ -437,6 +517,10 @@ function SubmitButton() {
 }`} lang="jsx" />
 
 ### 73. ¿Qué es useFormState?
+
+**¿Qué es?** Hook que maneja estado basado en el resultado de una Server Action.
+
+**¿Para qué sirve?** Mostrar errores de validación o mensajes de éxito después de submit.
 
 <Code code={`'use client';
 import { useFormState } from 'react-dom';
@@ -466,6 +550,10 @@ function Form() {
 }`} lang="jsx" />
 
 ### 74. ¿Qué es useOptimistic?
+
+**¿Qué es?** Hook para actualizaciones optimistas: mostrar el resultado esperado ANTES de que el servidor confirme.
+
+**¿Para qué sirve?** UI instantánea. Si falla, se revierte automáticamente.
 
 <Code code={`'use client';
 import { useOptimistic } from 'react';
@@ -498,9 +586,15 @@ function Messages({ messages }) {
 
 ### 75. ¿Qué es React Compiler (React Forget)?
 
-React Compiler es un compilador que automáticamente memoriza componentes y valores, eliminando la necesidad de `useMemo`, `useCallback` y `React.memo` manuales.
+**¿Qué es?** Compilador que automáticamente memoriza componentes y valores.
+
+**¿Para qué sirve?** Elimina la necesidad de `useMemo`, `useCallback` y `React.memo` manuales. Optimización automática.
 
 ### 76. ¿Qué son los Actions en React 19?
+
+**¿Qué es?** Funciones async que se pasan a `startTransition`. Manejan pending states automáticamente.
+
+**¿Para qué sirve?** Simplificar manejo de loading/error en operaciones asíncronas.
 
 <Code code={`// Actions - funciones async que manejan transiciones
 function UpdateName() {
@@ -522,6 +616,10 @@ function UpdateName() {
 
 ### 77. ¿Qué es Document Metadata en React 19?
 
+**¿Qué es?** Capacidad de definir `<title>`, `<meta>`, `<link>` directamente en componentes.
+
+**¿Para qué sirve?** SEO dinámico sin librerías externas. React los mueve automáticamente al `<head>`.
+
 <Code code={`// Metadata directamente en componentes
 function BlogPost({ post }) {
   return (
@@ -538,6 +636,10 @@ function BlogPost({ post }) {
 
 ### 78. ¿Qué es Asset Loading en React 19?
 
+**¿Qué es?** APIs para precargar recursos (DNS, conexiones, fonts, scripts).
+
+**¿Para qué sirve?** Mejorar performance cargando recursos antes de necesitarlos.
+
 <Code code={`// Precargar recursos
 import { prefetchDNS, preconnect, preload, preinit } from 'react-dom';
 
@@ -552,6 +654,10 @@ function Component() {
 
 ### 79. ¿Qué es ref como prop en React 19?
 
+**¿Qué es?** En React 19, `ref` es una prop normal. Ya no necesitas `forwardRef`.
+
+**Beneficio:** Código más simple y menos boilerplate.
+
 <Code code={`// React 19 - ref como prop normal (sin forwardRef)
 function Input({ ref, ...props }) {
   return <input ref={ref} {...props} />;
@@ -564,6 +670,10 @@ function Form() {
 }`} lang="jsx" />
 
 ### 80. ¿Qué es el Context como provider en React 19?
+
+**¿Qué es?** En React 19, el Context se usa directamente como provider sin `.Provider`.
+
+**Antes:** `<ThemeContext.Provider>`. **Ahora:** `<ThemeContext>`.
 
 <Code code={`// React 19 - Context directamente como provider
 const ThemeContext = createContext('light');
@@ -587,7 +697,9 @@ function App() {
 
 ### 81. ¿Qué es Next.js?
 
-Framework de React con:
+**¿Qué es?** Framework full-stack de React creado por Vercel. El más popular para producción.
+
+**Incluye:**
 - Server-Side Rendering (SSR)
 - Static Site Generation (SSG)
 - API Routes
@@ -595,6 +707,10 @@ Framework de React con:
 - Server Components
 
 ### 82. ¿Cuál es la diferencia entre SSR, SSG e ISR?
+
+**SSR (Server-Side Rendering):** HTML generado en cada request.
+**SSG (Static Site Generation):** HTML generado en build time.
+**ISR (Incremental Static Regeneration):** SSG + revalidación periódica.
 
 | Método | Cuándo genera | Uso |
 |--------|---------------|-----|
@@ -604,7 +720,9 @@ Framework de React con:
 
 ### 83. ¿Qué es Remix?
 
-Framework de React enfocado en:
+**¿Qué es?** Framework de React enfocado en web standards y progressive enhancement.
+
+**Características:**
 - Web standards (forms, fetch)
 - Progressive enhancement
 - Nested routing
@@ -612,7 +730,9 @@ Framework de React enfocado en:
 
 ### 84. ¿Qué es Vite?
 
-Build tool moderno que ofrece:
+**¿Qué es?** Build tool moderno que reemplaza a Create React App. Creado por Evan You (Vue).
+
+**Ventajas:**
 - Dev server ultra rápido (ESM nativo)
 - HMR instantáneo
 - Build optimizado con Rollup
@@ -620,7 +740,9 @@ Build tool moderno que ofrece:
 
 ### 85. ¿Qué es Storybook?
 
-Herramienta para desarrollar y documentar componentes en aislamiento.
+**¿Qué es?** Herramienta para desarrollar y documentar componentes UI en aislamiento.
+
+**¿Para qué sirve?** Crear catálogo de componentes, testing visual, documentación interactiva.
 
 <Code code={`// Button.stories.jsx
 export default {
@@ -644,6 +766,10 @@ export const Secondary = {
 
 ### 86. ¿Qué es Playwright/Cypress para testing E2E?
 
+**¿Qué es?** Herramientas para testing end-to-end (simular usuario real en browser).
+
+**Playwright:** Más rápido, multi-browser. **Cypress:** Más fácil de usar, mejor DX.
+
 <Code code={`// Playwright
 import { test, expect } from '@playwright/test';
 
@@ -656,6 +782,10 @@ test('login flow', async ({ page }) => {
 });`} lang="javascript" />
 
 ### 87. ¿Qué es MSW (Mock Service Worker)?
+
+**¿Qué es?** Librería para mockear APIs interceptando requests a nivel de red.
+
+**¿Para qué sirve?** Testing sin backend real, desarrollo offline, simular errores.
 
 <Code code={`import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -672,17 +802,25 @@ afterAll(() => server.close());`} lang="javascript" />
 
 ### 88. ¿Qué es React Native?
 
-Framework para construir apps móviles nativas usando React. Comparte lógica con web pero usa componentes nativos.
+**¿Qué es?** Framework para construir apps móviles nativas usando React.
+
+**¿Cómo funciona?** Comparte lógica con web pero usa componentes nativos (View, Text, etc. en vez de div, p).
 
 ### 89. ¿Qué es Expo?
 
-Plataforma que simplifica el desarrollo con React Native:
+**¿Qué es?** Plataforma que simplifica React Native. Recomendada para empezar.
+
+**Incluye:**
 - Sin configuración nativa
 - OTA updates
 - SDK con APIs comunes
 - Expo Go para testing
 
 ### 90. ¿Qué es Framer Motion?
+
+**¿Qué es?** Librería de animaciones declarativas para React.
+
+**¿Para qué sirve?** Animaciones complejas con API simple: entrada, salida, gestos, layout animations.
 
 <Code code={`import { motion } from 'framer-motion';
 
@@ -705,6 +843,10 @@ function Component() {
 
 ### 91. ¿Cómo estructurar un proyecto React grande?
 
+**Principio:** Agrupar por feature/dominio, no por tipo de archivo.
+
+**Estructura recomendada:**
+
 <Code code={`src/
 ├── components/        # Componentes reutilizables
 │   ├── ui/           # Componentes UI básicos
@@ -724,7 +866,9 @@ function Component() {
 
 ### 92. ¿Qué es Feature-Sliced Design?
 
-Arquitectura que organiza código por features y capas:
+**¿Qué es?** Arquitectura que organiza código por features y capas con reglas estrictas de dependencias.
+
+**Capas (de mayor a menor):**
 - **app/** - Configuración global
 - **pages/** - Composición de features
 - **widgets/** - Bloques de UI complejos
@@ -733,6 +877,8 @@ Arquitectura que organiza código por features y capas:
 - **shared/** - Código reutilizable
 
 ### 93. ¿Cómo manejar autenticación?
+
+**Patrón común:** Context + Provider que maneja estado de usuario, login, logout, y verificación de sesión.
 
 <Code code={`// Context de autenticación
 const AuthContext = createContext(null);
@@ -765,6 +911,10 @@ function AuthProvider({ children }) {
 
 ### 94. ¿Cómo implementar internacionalización (i18n)?
 
+**¿Qué es?** Soporte para múltiples idiomas en la aplicación.
+
+**Librería popular:** `react-i18next` - archivos JSON con traducciones + hook `useTranslation`.
+
 <Code code={`// Con react-i18next
 import { useTranslation } from 'react-i18next';
 
@@ -790,6 +940,8 @@ function Welcome() {
 
 ### 95. ¿Cómo implementar temas (dark/light mode)?
 
+**Patrón:** Context + CSS variables. Guardar preferencia en localStorage.
+
 <Code code={`const ThemeContext = createContext();
 
 function ThemeProvider({ children }) {
@@ -812,6 +964,8 @@ function ThemeProvider({ children }) {
 }`} lang="jsx" />
 
 ### 96. ¿Cómo manejar formularios complejos?
+
+**Librerías recomendadas:** React Hook Form (performance) + Zod (validación con TypeScript).
 
 <Code code={`// Con React Hook Form
 import { useForm } from 'react-hook-form';
@@ -844,6 +998,10 @@ function LoginForm() {
 }`} lang="jsx" />
 
 ### 97. ¿Cómo implementar infinite scroll?
+
+**¿Qué es?** Cargar más contenido automáticamente cuando el usuario llega al final de la lista.
+
+**¿Cómo?** Usar `IntersectionObserver` para detectar cuando el último elemento es visible.
 
 <Code code={`function InfiniteList() {
   const [items, setItems] = useState([]);
@@ -886,6 +1044,10 @@ function LoginForm() {
 
 ### 98. ¿Cómo implementar WebSockets en React?
 
+**¿Qué es?** Conexión bidireccional en tiempo real entre cliente y servidor.
+
+**¿Para qué sirve?** Chat, notificaciones en vivo, actualizaciones en tiempo real.
+
 <Code code={`function useWebSocket(url) {
   const [messages, setMessages] = useState([]);
   const [isConnected, setIsConnected] = useState(false);
@@ -911,6 +1073,8 @@ function LoginForm() {
 }`} lang="jsx" />
 
 ### 99. ¿Cómo manejar errores globalmente?
+
+**Estrategia:** Error Boundary para errores de render + event listener para errores async.
 
 <Code code={`// Error Boundary global
 class GlobalErrorBoundary extends React.Component {
@@ -939,6 +1103,8 @@ window.addEventListener('unhandledrejection', (event) => {
 });`} lang="jsx" />
 
 ### 100. ¿Cuáles son las mejores prácticas de React?
+
+**Resumen de buenas prácticas:**
 
 1. **Componentes pequeños y enfocados**
 2. **Composición sobre herencia**

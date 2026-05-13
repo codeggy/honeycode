@@ -132,6 +132,15 @@ function Nieto() {
 
 ### 8. ¿Cuándo usar Context vs Redux?
 
+**¿Qué es?**
+Context es la solución nativa de React para compartir estado global. Redux es una librería externa más robusta.
+
+**¿Para qué sirve?**
+- **Context**: Ideal para datos que cambian poco (tema, idioma, usuario autenticado)
+- **Redux**: Ideal para estado complejo con muchas actualizaciones y lógica de negocio
+
+**¿Cómo elegir?**
+
 | Context | Redux |
 |---------|-------|
 | Estado simple | Estado complejo |
@@ -141,123 +150,418 @@ function Nieto() {
 
 ### 9. ¿Qué es useRef?
 
-<Code code={`function Componente() {
-  // Referencia a elemento DOM
+**¿Qué es?**
+Hook que crea una referencia mutable que persiste durante todo el ciclo de vida del componente.
+
+**¿Para qué sirve?**
+1. **Acceder a elementos del DOM** directamente (focus, scroll, medidas)
+2. **Guardar valores** que no deben causar re-render al cambiar (contadores, timers, valores previos)
+
+**¿Cómo se usa?**
+- `useRef(valorInicial)` retorna un objeto `{ current: valorInicial }`
+- Cambiar `.current` NO causa re-render
+- El valor persiste entre renders
+
+**Ejemplo práctico - Enfocar un input automáticamente:**
+
+<Code code={`function FormularioBusqueda() {
   const inputRef = useRef(null);
   
-  // Valor que persiste entre renders (no causa re-render)
-  const renderCount = useRef(0);
+  // Al montar, enfoca el input
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
+  
+  return (
+    <input 
+      ref={inputRef} 
+      placeholder="Buscar..." 
+    />
+  );
+}`} lang="jsx" />
+
+**Ejemplo práctico - Guardar valor anterior:**
+
+<Code code={`function Contador() {
+  const [count, setCount] = useState(0);
+  const prevCount = useRef(0);
   
   useEffect(() => {
-    renderCount.current += 1;
-    inputRef.current.focus();
-  });
+    prevCount.current = count; // Guarda el valor anterior
+  }, [count]);
   
-  return <input ref={inputRef} />;
+  return (
+    <div>
+      <p>Actual: {count}</p>
+      <p>Anterior: {prevCount.current}</p>
+      <button onClick={() => setCount(c => c + 1)}>+1</button>
+    </div>
+  );
 }`} lang="jsx" />
 
 ### 10. ¿Qué es useCallback?
 
-<Code code={`function Padre() {
-  const [count, setCount] = useState(0);
+**¿Qué es?**
+Hook que memoriza una función para que mantenga la misma referencia entre renders.
+
+**¿Para qué sirve?**
+Evitar que componentes hijos se re-rendericen innecesariamente cuando les pasas funciones como props.
+
+**¿Cuándo usarlo?**
+- Cuando pasas funciones a componentes hijos optimizados con `React.memo`
+- Cuando la función es dependencia de un `useEffect`
+
+**¿Cómo se usa?**
+```jsx
+const funcionMemorizada = useCallback(() => {
+  // lógica
+}, [dependencias]);
+```
+
+**Ejemplo práctico - Botón que no se re-renderiza innecesariamente:**
+
+<Code code={`// Componente hijo optimizado
+const Boton = React.memo(({ onClick, texto }) => {
+  console.log('Boton renderizado');
+  return <button onClick={onClick}>{texto}</button>;
+});
+
+function Formulario() {
+  const [nombre, setNombre] = useState('');
+  const [contador, setContador] = useState(0);
   
-  // Sin useCallback - nueva función en cada render
-  const handleClick = () => {
-    console.log('click');
-  };
+  // SIN useCallback: Boton se re-renderiza cada vez que escribes
+  // const handleSubmit = () => console.log('Enviado:', nombre);
   
-  // Con useCallback - misma referencia si deps no cambian
-  const handleClickMemo = useCallback(() => {
-    console.log('click', count);
-  }, [count]);
+  // CON useCallback: Boton NO se re-renderiza al escribir
+  const handleSubmit = useCallback(() => {
+    console.log('Enviado:', nombre);
+  }, [nombre]); // Solo cambia si 'nombre' cambia
   
-  return <Hijo onClick={handleClickMemo} />;
+  return (
+    <div>
+      <input 
+        value={nombre} 
+        onChange={(e) => setNombre(e.target.value)} 
+      />
+      <Boton onClick={handleSubmit} texto="Enviar" />
+      <p>Contador: {contador}</p>
+      <button onClick={() => setContador(c => c + 1)}>+1</button>
+    </div>
+  );
 }`} lang="jsx" />
 
 ### 11. ¿Qué es useMemo?
 
-<Code code={`function Componente({ items }) {
-  // Memoriza el resultado de un cálculo costoso
-  const itemsFiltrados = useMemo(() => {
-    return items.filter(item => item.activo);
-  }, [items]);
+**¿Qué es?**
+Hook que memoriza el **resultado** de un cálculo para evitar recalcularlo en cada render.
+
+**¿Para qué sirve?**
+Optimizar rendimiento cuando tienes cálculos costosos que no necesitan ejecutarse en cada render.
+
+**¿Cuándo usarlo?**
+- Cálculos matemáticos complejos
+- Filtrar/ordenar listas grandes
+- Transformar datos
+- Crear objetos que serán props de componentes memorizados
+
+**¿Cómo se usa?**
+```jsx
+const valorMemorizado = useMemo(() => {
+  return calculoCostoso(a, b);
+}, [a, b]); // Solo recalcula si a o b cambian
+```
+
+**Ejemplo práctico - Calcular precio total con descuento:**
+
+<Code code={`function CarritoCompras({ productos, descuento }) {
+  // Sin useMemo: se recalcula en CADA render
+  // const total = productos.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
   
-  // Solo recalcula si 'items' cambia
-  return <Lista items={itemsFiltrados} />;
+  // Con useMemo: solo recalcula si productos o descuento cambian
+  const totalConDescuento = useMemo(() => {
+    console.log('Calculando total...'); // Verás esto solo cuando cambie
+    
+    const subtotal = productos.reduce(
+      (sum, producto) => sum + producto.precio * producto.cantidad, 
+      0
+    );
+    
+    const descuentoAplicado = subtotal * (descuento / 100);
+    return subtotal - descuentoAplicado;
+  }, [productos, descuento]);
+  
+  return (
+    <div>
+      <h2>Tu Carrito</h2>
+      {productos.map(p => (
+        <p key={p.id}>{p.nombre}: \${p.precio} x {p.cantidad}</p>
+      ))}
+      <hr />
+      <p><strong>Total: \${totalConDescuento.toFixed(2)}</strong></p>
+    </div>
+  );
+}`} lang="jsx" />
+
+**Ejemplo práctico - Filtrar lista grande:**
+
+<Code code={`function ListaUsuarios({ usuarios, filtro }) {
+  // Solo filtra cuando 'usuarios' o 'filtro' cambian
+  const usuariosFiltrados = useMemo(() => {
+    return usuarios.filter(user => 
+      user.nombre.toLowerCase().includes(filtro.toLowerCase())
+    );
+  }, [usuarios, filtro]);
+  
+  return (
+    <ul>
+      {usuariosFiltrados.map(user => (
+        <li key={user.id}>{user.nombre}</li>
+      ))}
+    </ul>
+  );
 }`} lang="jsx" />
 
 ### 12. ¿Cuál es la diferencia entre useMemo y useCallback?
 
-<Code code={`// useMemo - memoriza un VALOR
-const valor = useMemo(() => calcularAlgo(a, b), [a, b]);
+**Diferencia clave:**
+- **useMemo**: Memoriza el **RESULTADO** de ejecutar una función
+- **useCallback**: Memoriza la **FUNCIÓN** en sí misma
 
-// useCallback - memoriza una FUNCIÓN
-const fn = useCallback(() => hacerAlgo(a, b), [a, b]);
+**Analogía simple:**
+- `useMemo` = "Recuerda la respuesta" (ej: el número 42)
+- `useCallback` = "Recuerda cómo calcular" (ej: la fórmula)
 
-// useCallback es equivalente a:
-const fn = useMemo(() => () => hacerAlgo(a, b), [a, b]);`} lang="jsx" />
+**¿Cuándo usar cada uno?**
+
+| useMemo | useCallback |
+|---------|-------------|
+| Cálculos costosos | Funciones como props |
+| Transformar datos | Event handlers |
+| Valores derivados | Dependencias de useEffect |
+
+**Ejemplo comparativo:**
+
+<Code code={`function Ejemplo({ items }) {
+  // useMemo - memoriza el RESULTADO (un número)
+  const total = useMemo(() => {
+    return items.reduce((sum, item) => sum + item.precio, 0);
+  }, [items]);
+  // total = 150 (el valor calculado)
+  
+  // useCallback - memoriza la FUNCIÓN
+  const calcularTotal = useCallback(() => {
+    return items.reduce((sum, item) => sum + item.precio, 0);
+  }, [items]);
+  // calcularTotal = () => { ... } (la función)
+  // Para obtener el valor: calcularTotal() = 150
+  
+  return (
+    <div>
+      <p>Total directo: {total}</p>
+      <p>Total llamando función: {calcularTotal()}</p>
+      <BotonPago onPagar={calcularTotal} />
+    </div>
+  );
+}`} lang="jsx" />
 
 ### 13. ¿Qué es React.memo?
 
-<Code code={`// Componente que solo re-renderiza si props cambian
-const MiComponente = React.memo(function MiComponente({ nombre }) {
-  console.log('Renderizando...');
-  return <p>{nombre}</p>;
+**¿Qué es?**
+HOC (Higher Order Component) que memoriza un componente para evitar re-renders innecesarios.
+
+**¿Para qué sirve?**
+Evitar que un componente se re-renderice si sus props no han cambiado.
+
+**¿Cuándo usarlo?**
+- Componentes que renderizan frecuentemente
+- Componentes con renderizado costoso
+- Listas con muchos elementos
+
+**¿Cómo se usa?**
+```jsx
+const MiComponente = React.memo(function MiComponente(props) {
+  return <div>{props.valor}</div>;
+});
+```
+
+**Ejemplo práctico - Lista de productos optimizada:**
+
+<Code code={`// Componente hijo memorizado
+const ProductoItem = React.memo(function ProductoItem({ producto, onAgregar }) {
+  console.log('Renderizando:', producto.nombre);
+  
+  return (
+    <div className="producto">
+      <h3>{producto.nombre}</h3>
+      <p>\${producto.precio}</p>
+      <button onClick={() => onAgregar(producto.id)}>
+        Agregar al carrito
+      </button>
+    </div>
+  );
 });
 
-// Con comparación personalizada
-const MiComponente = React.memo(
-  function MiComponente({ user }) {
-    return <p>{user.nombre}</p>;
-  },
-  (prevProps, nextProps) => {
-    return prevProps.user.id === nextProps.user.id;
-  }
-);`} lang="jsx" />
+function ListaProductos({ productos }) {
+  const [carrito, setCarrito] = useState([]);
+  
+  const agregarAlCarrito = useCallback((id) => {
+    setCarrito(prev => [...prev, id]);
+  }, []);
+  
+  return (
+    <div>
+      <p>Items en carrito: {carrito.length}</p>
+      {productos.map(producto => (
+        <ProductoItem 
+          key={producto.id}
+          producto={producto}
+          onAgregar={agregarAlCarrito}
+        />
+      ))}
+    </div>
+  );
+}`} lang="jsx" />
 
 ### 14. ¿Qué es useReducer?
 
-<Code code={`const initialState = { count: 0 };
+**¿Qué es?**
+Hook alternativo a useState para manejar estado complejo con múltiples transiciones.
 
-function reducer(state, action) {
+**¿Para qué sirve?**
+Organizar la lógica de actualización de estado en un solo lugar (el reducer), especialmente cuando:
+- El estado tiene múltiples valores relacionados
+- Las actualizaciones dependen del estado anterior
+- La lógica es compleja
+
+**¿Cómo se usa?**
+```jsx
+const [state, dispatch] = useReducer(reducer, estadoInicial);
+// dispatch({ type: 'ACCION', payload: datos })
+```
+
+**Ejemplo práctico - Formulario de registro:**
+
+<Code code={`const initialState = {
+  nombre: '',
+  email: '',
+  password: '',
+  errors: {},
+  isSubmitting: false
+};
+
+function formReducer(state, action) {
   switch (action.type) {
-    case 'increment':
-      return { count: state.count + 1 };
-    case 'decrement':
-      return { count: state.count - 1 };
-    case 'reset':
+    case 'SET_FIELD':
+      return { 
+        ...state, 
+        [action.field]: action.value,
+        errors: { ...state.errors, [action.field]: '' }
+      };
+    case 'SET_ERROR':
+      return { 
+        ...state, 
+        errors: { ...state.errors, [action.field]: action.error }
+      };
+    case 'SUBMIT_START':
+      return { ...state, isSubmitting: true };
+    case 'SUBMIT_SUCCESS':
       return initialState;
+    case 'SUBMIT_ERROR':
+      return { ...state, isSubmitting: false };
     default:
-      throw new Error();
+      return state;
   }
 }
 
-function Counter() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+function FormularioRegistro() {
+  const [state, dispatch] = useReducer(formReducer, initialState);
+  
+  const handleChange = (e) => {
+    dispatch({ 
+      type: 'SET_FIELD', 
+      field: e.target.name, 
+      value: e.target.value 
+    });
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch({ type: 'SUBMIT_START' });
+    
+    try {
+      await registrarUsuario(state);
+      dispatch({ type: 'SUBMIT_SUCCESS' });
+    } catch (error) {
+      dispatch({ type: 'SUBMIT_ERROR' });
+    }
+  };
   
   return (
-    <>
-      Count: {state.count}
-      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
-      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
-    </>
+    <form onSubmit={handleSubmit}>
+      <input 
+        name="nombre" 
+        value={state.nombre} 
+        onChange={handleChange} 
+      />
+      {state.errors.nombre && <span>{state.errors.nombre}</span>}
+      
+      <input 
+        name="email" 
+        value={state.email} 
+        onChange={handleChange} 
+      />
+      
+      <button disabled={state.isSubmitting}>
+        {state.isSubmitting ? 'Enviando...' : 'Registrar'}
+      </button>
+    </form>
   );
 }`} lang="jsx" />
 
 ### 15. ¿Cuándo usar useState vs useReducer?
 
+**Regla simple:**
+- **useState**: Para valores simples e independientes (un contador, un string, un boolean)
+- **useReducer**: Para estado complejo con múltiples valores relacionados
+
+**Comparación:**
+
 | useState | useReducer |
 |----------|------------|
+| `setCount(count + 1)` | `dispatch({ type: 'INCREMENT' })` |
 | Estado simple | Estado complejo |
 | Pocas transiciones | Muchas transiciones |
 | Lógica simple | Lógica compleja |
-| Independiente | Valores relacionados |
+| Valores independientes | Valores relacionados |
+
+**Ejemplo - Cuándo migrar de useState a useReducer:**
+
+<Code code={`// Si tienes MUCHOS useState relacionados...
+const [nombre, setNombre] = useState('');
+const [email, setEmail] = useState('');
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState(null);
+const [success, setSuccess] = useState(false);
+
+// ...considera usar useReducer
+const [state, dispatch] = useReducer(formReducer, {
+  nombre: '',
+  email: '',
+  loading: false,
+  error: null,
+  success: false
+});`} lang="jsx" />
 
 ---
 
 ## Ciclo de Vida y Efectos (16-25)
 
 ### 16. ¿Cuál es el ciclo de vida de un componente?
+
+**¿Qué es?** Las fases por las que pasa un componente: Montaje (se crea), Actualización (cambia), Desmontaje (se elimina).
+
+**¿Cómo se maneja?** Con `useEffect` y su array de dependencias.
 
 <Code code={`// Montaje
 useEffect(() => {
@@ -278,9 +582,13 @@ useEffect(() => {
 
 ### 17. ¿Por qué useEffect se ejecuta dos veces en desarrollo?
 
-React 18 con StrictMode monta, desmonta y vuelve a montar componentes para detectar bugs en efectos. Solo ocurre en desarrollo.
+**¿Qué pasa?** React 18 con StrictMode monta, desmonta y vuelve a montar componentes intencionalmente.
+
+**¿Por qué?** Para detectar bugs en efectos que no limpian correctamente. Solo ocurre en desarrollo, NO en producción.
 
 ### 18. ¿Cómo hacer fetch de datos correctamente?
+
+**Consideraciones:** Manejar loading, error, y cancelar requests si el componente se desmonta.
 
 <Code code={`function useFetch(url) {
   const [data, setData] = useState(null);
@@ -322,6 +630,10 @@ React 18 con StrictMode monta, desmonta y vuelve a montar componentes para detec
 
 ### 19. ¿Qué es useLayoutEffect?
 
+**¿Qué es?** Versión síncrona de useEffect que se ejecuta ANTES de que el navegador pinte.
+
+**¿Para qué sirve?** Mediciones del DOM o cambios visuales que deben ocurrir antes del paint (evitar parpadeos).
+
 <Code code={`// useEffect - asíncrono, después del paint
 useEffect(() => {
   // Puede causar parpadeo visual
@@ -334,6 +646,10 @@ useLayoutEffect(() => {
 }, []);`} lang="jsx" />
 
 ### 20. ¿Cómo evitar memory leaks en useEffect?
+
+**¿Qué es?** Cuando un componente desmontado intenta actualizar su estado.
+
+**¿Cómo prevenirlo?** SIEMPRE retornar una función de limpieza que cancele operaciones pendientes.
 
 <Code code={`useEffect(() => {
   // 1. Cancelar fetch
@@ -354,6 +670,10 @@ useLayoutEffect(() => {
 }, []);`} lang="jsx" />
 
 ### 21. ¿Qué son los custom hooks?
+
+**¿Qué es?** Funciones que empiezan con `use` y pueden usar otros hooks.
+
+**¿Para qué sirve?** Extraer y reutilizar lógica con estado entre componentes.
 
 <Code code={`// Custom hook - reutiliza lógica con estado
 function useLocalStorage(key, initialValue) {
@@ -376,6 +696,10 @@ function App() {
 
 ### 22. ¿Cuáles son las reglas de los Hooks?
 
+**¿Qué son?** Reglas obligatorias que React necesita para que los hooks funcionen correctamente.
+
+**¿Por qué existen?** React rastrea los hooks por el ORDEN en que se llaman. Si el orden cambia entre renders, React se confunde.
+
 1. **Solo en el nivel superior** - No dentro de loops, condiciones o funciones anidadas
 2. **Solo en componentes de React** - O en custom hooks
 3. **Mismo orden siempre** - React depende del orden de llamada
@@ -394,6 +718,10 @@ useEffect(() => {
 
 ### 23. ¿Qué es useId?
 
+**¿Qué es?** Hook que genera IDs únicos y estables, especialmente útil para Server-Side Rendering (SSR).
+
+**¿Para qué sirve?** Conectar labels con inputs de forma accesible, sin conflictos de IDs entre servidor y cliente.
+
 <Code code={`function FormField() {
   const id = useId();
   
@@ -407,6 +735,10 @@ useEffect(() => {
 // Genera IDs únicos y estables para SSR`} lang="jsx" />
 
 ### 24. ¿Qué es useTransition?
+
+**¿Qué es?** Hook que permite marcar actualizaciones de estado como "no urgentes" para mantener la UI responsiva.
+
+**¿Para qué sirve?** Evitar que operaciones costosas (filtrar listas grandes) bloqueen la interacción del usuario.
 
 <Code code={`function App() {
   const [isPending, startTransition] = useTransition();
@@ -432,6 +764,10 @@ useEffect(() => {
 
 ### 25. ¿Qué es useDeferredValue?
 
+**¿Qué es?** Hook que retrasa la actualización de un valor hasta que el navegador tenga tiempo libre.
+
+**¿Para qué sirve?** Similar a useTransition, pero para valores que vienen de props en vez de estado local.
+
 <Code code={`function SearchResults({ query }) {
   // Retrasa la actualización de query
   const deferredQuery = useDeferredValue(query);
@@ -450,6 +786,10 @@ useEffect(() => {
 ## Patrones y Arquitectura (26-35)
 
 ### 26. ¿Qué es el patrón Container/Presentational?
+
+**¿Qué es?** Patrón que separa componentes en dos tipos: los que manejan lógica (Container) y los que solo renderizan UI (Presentational).
+
+**¿Para qué sirve?** Mejor organización, reutilización de UI, y testing más fácil.
 
 <Code code={`// Container - lógica y estado
 function UserListContainer() {
@@ -474,6 +814,10 @@ function UserList({ users }) {
 }`} lang="jsx" />
 
 ### 27. ¿Qué es el patrón Compound Components?
+
+**¿Qué es?** Patrón donde varios componentes trabajan juntos compartiendo estado implícito via Context.
+
+**¿Para qué sirve?** Crear APIs limpias y flexibles (como `<select>` y `<option>` en HTML).
 
 <Code code={`// API limpia para componentes relacionados
 function Tabs({ children, defaultTab }) {
@@ -512,6 +856,10 @@ Tabs.Tab = function Tab({ id, children }) {
 
 ### 28. ¿Qué es el patrón Render Props?
 
+**¿Qué es?** Patrón donde un componente recibe una función como prop que retorna JSX.
+
+**¿Para qué sirve?** Compartir lógica entre componentes de forma flexible. Hoy se prefieren custom hooks.
+
 <Code code={`// Componente que comparte lógica via render prop
 function Mouse({ render }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -534,6 +882,10 @@ function Mouse({ render }) {
 
 ### 29. ¿Qué son los Higher-Order Components (HOC)?
 
+**¿Qué es?** Función que recibe un componente y retorna un nuevo componente con funcionalidad adicional.
+
+**¿Para qué sirve?** Reutilizar lógica (autenticación, logging, etc.). Hoy se prefieren custom hooks.
+
 <Code code={`// HOC - función que recibe componente y retorna componente mejorado
 function withAuth(WrappedComponent) {
   return function AuthenticatedComponent(props) {
@@ -552,6 +904,8 @@ const ProtectedDashboard = withAuth(Dashboard);`} lang="jsx" />
 
 ### 30. ¿Cuándo usar HOC vs Custom Hooks?
 
+**¿Cuál elegir?** Custom Hooks son la opción moderna y preferida. HOCs son legacy pero aún útiles en casos específicos.
+
 | HOC | Custom Hooks |
 |-----|--------------|
 | Modifica el árbol de componentes | Solo comparte lógica |
@@ -560,6 +914,10 @@ const ProtectedDashboard = withAuth(Dashboard);`} lang="jsx" />
 | Legacy | Moderno (preferido) |
 
 ### 31. ¿Qué es forwardRef?
+
+**¿Qué es?** Función que permite a un componente recibir una ref y pasarla a un elemento hijo.
+
+**¿Para qué sirve?** Acceder al DOM de un componente hijo desde el padre (ej: enfocar un input custom).
 
 <Code code={`// Permite pasar ref a componentes hijos
 const Input = forwardRef(function Input(props, ref) {
@@ -578,6 +936,10 @@ function Form() {
 }`} lang="jsx" />
 
 ### 32. ¿Qué es useImperativeHandle?
+
+**¿Qué es?** Hook que personaliza qué métodos expone un componente cuando usa forwardRef.
+
+**¿Para qué sirve?** Exponer solo métodos específicos al padre, en vez de todo el elemento DOM.
 
 <Code code={`const FancyInput = forwardRef(function FancyInput(props, ref) {
   const inputRef = useRef(null);
@@ -606,6 +968,10 @@ function Parent() {
 
 ### 33. ¿Qué es Suspense?
 
+**¿Qué es?** Componente que muestra un fallback mientras sus hijos están "suspendidos" (cargando).
+
+**¿Para qué sirve?** Mostrar loading states de forma declarativa para lazy loading y data fetching.
+
 <Code code={`// Suspense para lazy loading
 const LazyComponent = lazy(() => import('./HeavyComponent'));
 
@@ -627,6 +993,10 @@ function Posts() {
 }`} lang="jsx" />
 
 ### 34. ¿Qué son los Error Boundaries?
+
+**¿Qué es?** Componentes de clase que capturan errores de JavaScript en su árbol de hijos.
+
+**¿Para qué sirve?** Evitar que un error en un componente rompa toda la app. Mostrar UI de error amigable.
 
 <Code code={`class ErrorBoundary extends React.Component {
   state = { hasError: false };
@@ -654,6 +1024,10 @@ function Posts() {
 
 ### 35. ¿Qué es React.lazy?
 
+**¿Qué es?** Función que permite cargar componentes de forma diferida (lazy loading).
+
+**¿Para qué sirve?** Code splitting - dividir el bundle en partes más pequeñas que se cargan bajo demanda.
+
 <Code code={`// Code splitting - carga componentes bajo demanda
 const Dashboard = lazy(() => import('./Dashboard'));
 const Settings = lazy(() => import('./Settings'));
@@ -674,6 +1048,10 @@ function App() {
 ## React Router y Navegación (36-40)
 
 ### 36. ¿Cómo configurar React Router?
+
+**¿Qué es?** Librería estándar para manejar navegación en React SPAs.
+
+**Componentes principales:** `BrowserRouter` (envuelve la app), `Routes` (contenedor), `Route` (define rutas), `Link` (navegación).
 
 <Code code={`import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
@@ -697,6 +1075,10 @@ function App() {
 
 ### 37. ¿Cómo obtener parámetros de la URL?
 
+**Hooks disponibles:**
+- `useParams()` - Parámetros de ruta (`:id`)
+- `useSearchParams()` - Query params (`?page=1`)
+
 <Code code={`import { useParams, useSearchParams } from 'react-router-dom';
 
 function User() {
@@ -712,6 +1094,10 @@ function User() {
 
 ### 38. ¿Cómo hacer navegación programática?
 
+**¿Qué es?** Navegar desde código JavaScript en vez de clicks del usuario.
+
+**¿Cómo?** Usar el hook `useNavigate()` que retorna una función para navegar.
+
 <Code code={`import { useNavigate } from 'react-router-dom';
 
 function Login() {
@@ -726,6 +1112,10 @@ function Login() {
 }`} lang="jsx" />
 
 ### 39. ¿Cómo proteger rutas?
+
+**¿Qué es?** Restringir acceso a ciertas rutas solo a usuarios autenticados.
+
+**¿Cómo?** Crear un componente wrapper que verifica autenticación y redirige si no hay usuario.
 
 <Code code={`function ProtectedRoute({ children }) {
   const { user } = useAuth();
@@ -749,6 +1139,10 @@ function Login() {
 />`} lang="jsx" />
 
 ### 40. ¿Qué son las rutas anidadas?
+
+**¿Qué es?** Rutas dentro de otras rutas que comparten un layout común.
+
+**¿Para qué sirve?** Crear layouts con sidebar/header compartido. El componente `<Outlet />` renderiza la ruta hija.
 
 <Code code={`<Routes>
   <Route path="/dashboard" element={<DashboardLayout />}>
@@ -774,6 +1168,10 @@ function DashboardLayout() {
 
 ### 41. ¿Cómo testear componentes con React Testing Library?
 
+**¿Qué es?** Librería que testea componentes como los usaría un usuario real.
+
+**Filosofía:** Buscar elementos por rol, texto o label (no por clases o IDs).
+
 <Code code={`import { render, screen, fireEvent } from '@testing-library/react';
 
 test('incrementa contador al hacer clic', () => {
@@ -788,6 +1186,8 @@ test('incrementa contador al hacer clic', () => {
 });`} lang="jsx" />
 
 ### 42. ¿Cómo testear hooks personalizados?
+
+**¿Cómo?** Usar `renderHook` de Testing Library. Envolver cambios de estado en `act()`.
 
 <Code code={`import { renderHook, act } from '@testing-library/react';
 
@@ -804,6 +1204,10 @@ test('useCounter incrementa valor', () => {
 });`} lang="jsx" />
 
 ### 43. ¿Cómo mockear fetch en tests?
+
+**¿Por qué?** Evitar llamadas reales a APIs en tests. Controlar las respuestas.
+
+**¿Cómo?** Usar `jest.fn()` para reemplazar `fetch` global.
 
 <Code code={`beforeEach(() => {
   global.fetch = jest.fn(() =>
@@ -827,12 +1231,18 @@ test('carga datos correctamente', async () => {
 
 ### 44. ¿Qué es snapshot testing?
 
+**¿Qué es?** Guardar el output renderizado y compararlo en futuros tests.
+
+**¿Para qué sirve?** Detectar cambios inesperados en la UI. Útil pero puede dar falsos positivos.
+
 <Code code={`test('renderiza correctamente', () => {
   const { asFragment } = render(<Button>Click me</Button>);
   expect(asFragment()).toMatchSnapshot();
 });`} lang="jsx" />
 
 ### 45. ¿Cómo testear Context?
+
+**¿Cómo?** Crear un wrapper que provea el Context con valores de prueba.
 
 <Code code={`const wrapper = ({ children }) => (
   <UserContext.Provider value={{ user: { name: 'Test' } }}>
@@ -851,12 +1261,16 @@ test('muestra nombre del usuario', () => {
 
 ### 46. ¿Cómo identificar problemas de performance?
 
+**Herramientas disponibles:**
+
 - React DevTools Profiler
 - Chrome DevTools Performance tab
 - `console.log` en renders
 - React.StrictMode (detecta renders dobles)
 
 ### 47. ¿Qué causa re-renders innecesarios?
+
+**Causas comunes:** Objetos/funciones inline, keys incorrectas, estado en componente muy alto.
 
 <Code code={`// 1. Crear objetos/arrays inline
 <Child style={{ color: 'red' }} /> // Nuevo objeto cada render
@@ -871,6 +1285,10 @@ test('muestra nombre del usuario', () => {
 // Mover estado lo más abajo posible`} lang="jsx" />
 
 ### 48. ¿Cómo optimizar listas grandes?
+
+**¿Qué es virtualización?** Solo renderizar los elementos visibles en pantalla.
+
+**Librerías:** `react-window`, `react-virtualized`, `@tanstack/virtual`.
 
 <Code code={`// Virtualización con react-window
 import { FixedSizeList } from 'react-window';
@@ -892,12 +1310,16 @@ function VirtualList({ items }) {
 
 ### 49. ¿Qué es React Concurrent Mode?
 
-Permite a React interrumpir renders largos para mantener la UI responsiva. Incluye features como:
+**¿Qué es?** Modo que permite a React interrumpir renders largos para mantener la UI responsiva. Incluye features como:
 - `useTransition` - marcar actualizaciones como no urgentes
 - `useDeferredValue` - diferir valores
 - `Suspense` para data fetching
 
 ### 50. ¿Cómo hacer code splitting efectivo?
+
+**¿Qué es?** Dividir el bundle en partes que se cargan bajo demanda.
+
+**Estrategias:** Por ruta (más común), por feature, preload en hover.
 
 <Code code={`// Por ruta
 const Home = lazy(() => import('./pages/Home'));
